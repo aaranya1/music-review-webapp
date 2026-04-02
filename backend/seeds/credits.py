@@ -9,7 +9,11 @@ Modes:
 
 import sys
 import re
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from app import app
+
+_DISCOGS_SUFFIX_RE = re.compile(r'\s*\(\d+\)$')
 from db import db
 from models import Album, Track, Artist, Credit
 from services.musicbrainz import search_mb_rels
@@ -172,7 +176,8 @@ def _write_discogs_credits(album, discogs_credits_by_position, db_tracks):
 
             seen = set()
             for credit_data in credits:
-                name, role = credit_data['artist_name'], credit_data['role']
+                name = _DISCOGS_SUFFIX_RE.sub('', credit_data['artist_name']).strip()
+                role = credit_data['role']
                 key = (name, role)
                 if key in seen:
                     continue

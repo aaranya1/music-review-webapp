@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './AlbumCard.css';
 
 function AlbumCard({ album, fromArtist }) {
     const [imgError, setImgError] = useState(false)
+    const navigate = useNavigate()
 
     return (
         <Link to={`/albums/${album.mbid}`} state={fromArtist ? { fromArtist } : undefined} className='album-card'>
@@ -30,7 +31,7 @@ function AlbumCard({ album, fromArtist }) {
                                     className='album-card__overlay-artist-link'
                                     onClick={e => {
                                         e.preventDefault()
-                                        window.location.href = `/artists/${artist.mbid}`
+                                        navigate(`/artists/${artist.mbid}`)
                                     }}
                                 >
                                     {artist.name}

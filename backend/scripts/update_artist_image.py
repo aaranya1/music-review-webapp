@@ -9,6 +9,8 @@ that already have both fields populated.
 """
 
 import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from app import app
 from db import db
 from models import Artist

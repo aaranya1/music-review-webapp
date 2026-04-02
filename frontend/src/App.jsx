@@ -31,6 +31,12 @@ function App() {
           <Route path='/artists' element={<RequireAuth><ArtistList /></RequireAuth>} />
           <Route path='/artists/:mbid' element={<RequireAuth><ArtistDetails /></RequireAuth>} />
           <Route path='/users/:user_id' element={<RequireAuth><UserProfile /></RequireAuth>} />
+          <Route path='*' element={
+            <div style={{ textAlign: 'center', padding: '6rem 2rem', fontFamily: 'var(--font-body)', color: '#706c68' }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: '#ddd9d1', marginBottom: '0.5rem' }}>404</h2>
+              <p>This page doesn't exist.</p>
+            </div>
+          } />
         </Routes>
       </div>
     </>

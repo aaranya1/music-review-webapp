@@ -9,12 +9,12 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
 }
 
 /* ── Logo ── */
 .navbar__logo {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1.4rem;
     font-weight: 700;
     color: #f2ede4;
@@ -35,7 +35,7 @@
 }
 
 .navbar__link {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.8rem;
     font-weight: 400;
     letter-spacing: 0.08em;
@@ -85,7 +85,7 @@
     border: none;
     outline: none;
     color: #ddd9d1;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 400;
     padding: 0.5rem 0.85rem;
@@ -127,7 +127,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1rem;
     font-weight: 700;
     text-decoration: none;
@@ -138,7 +138,7 @@
 .navbar__avatar:hover { opacity: 0.8; }
 
 .navbar__username {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
     font-weight: 400;
     color: #706c68;
@@ -153,7 +153,7 @@
     background: transparent;
     border: 1px solid #282422;
     color: #706c68;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.72rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -180,7 +180,7 @@
     background: transparent;
     border: none;
     color: #706c68;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 400;
     cursor: pointer;
@@ -194,7 +194,7 @@
     background: transparent;
     border: 1px solid #4a4642;
     color: #ddd9d1;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
     font-weight: 400;
     letter-spacing: 0.1em;
@@ -231,7 +231,7 @@
 }
 
 .search-dropdown__empty {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
     font-weight: 400;
     font-style: italic;
@@ -245,7 +245,7 @@
 
 .search-dropdown__label {
     display: block;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.62rem;
     font-weight: 400;
     letter-spacing: 0.16em;
@@ -277,7 +277,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1rem;
     color: #4a4642;
 }
@@ -299,7 +299,7 @@
 }
 
 .search-dropdown__title {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 400;
     color: #ddd9d1;
@@ -309,7 +309,7 @@
 }
 
 .search-dropdown__sub {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.75rem;
     font-weight: 400;
     color: #706c68;
@@ -319,7 +319,7 @@
 }
 
 .search-dropdown__footer {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 400;
     letter-spacing: 0.05em;
