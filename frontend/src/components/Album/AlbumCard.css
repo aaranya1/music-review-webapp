@@ -43,7 +43,7 @@
 }
 
 .album-card__fallback-letter {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: clamp(2rem, 6vw, 3.5rem);
     font-weight: 700;
     color: #343230;
@@ -82,7 +82,7 @@
 }
 
 .album-card__overlay-artists {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.72rem;
     font-weight: 400;
     color: #ddd9d1;
@@ -101,7 +101,7 @@
 .album-card__overlay-artist-link:hover { opacity: 0.7; }
 
 .album-card__overlay-title {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1rem;
     font-weight: 700;
     color: #f2ede4;
@@ -114,7 +114,7 @@
 }
 
 .album-card__overlay-year {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.68rem;
     font-weight: 400;
     color: #706c68;

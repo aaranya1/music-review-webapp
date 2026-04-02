@@ -9,7 +9,7 @@
 }
 
 .profile-root {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     color: var(--text);
     padding: 2.5rem 0 4rem;
     max-width: 780px;
@@ -52,7 +52,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 3rem;
     font-weight: 700;
     color: var(--gold-dim);
@@ -63,7 +63,7 @@
 .profile-header__info { flex: 1; min-width: 0; }
 
 .profile-header__label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 400;
     letter-spacing: 0.18em;
@@ -73,7 +73,7 @@
 }
 
 .profile-header__username {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: clamp(1.8rem, 4vw, 2.8rem);
     font-weight: 700;
     color: var(--text);
@@ -89,14 +89,14 @@
 }
 
 .profile-header__stat {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 400;
     color: var(--muted);
 }
 
 .profile-header__stat-value {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--text);
@@ -118,7 +118,7 @@
 }
 
 .profile-divider__label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 400;
     letter-spacing: 0.18em;
@@ -129,7 +129,7 @@
 
 /* ── Empty ── */
 .profile-empty {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     color: var(--muted);
     font-size: 0.92rem;
     font-weight: 400;
@@ -185,7 +185,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1.5rem;
     color: var(--gold-dim);
 }
@@ -197,7 +197,7 @@
 }
 
 .profile-review-card__title {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1.05rem;
     font-weight: 700;
     color: var(--text);
@@ -221,14 +221,14 @@
 }
 
 .profile-review-card__rating-val {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 0.9rem;
     font-weight: 400;
     color: #c8a96e;
 }
 
 .profile-review-card__edited {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.68rem;
     font-weight: 400;
     color: var(--muted);
@@ -237,7 +237,7 @@
 }
 
 .profile-review-card__comment {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.88rem;
     font-weight: 400;
     color: var(--muted);
@@ -262,7 +262,7 @@
     background: transparent;
     border: 1px solid var(--border);
     color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
     font-weight: 400;
     letter-spacing: 0.1em;
@@ -284,7 +284,7 @@
 }
 
 .profile-pagination__label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
     color: var(--muted);
     font-weight: 400;

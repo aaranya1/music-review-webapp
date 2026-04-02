@@ -1,5 +1,5 @@
 .album-list-root {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     color: #ddd9d1;
     padding: 2.5rem 0 4rem;
     max-width: 1200px;
@@ -15,7 +15,7 @@
 }
 
 .album-list-header__title {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: clamp(1.6rem, 3vw, 2.4rem);
     font-weight: 700;
     color: #f2ede4;
@@ -62,7 +62,7 @@
     background: transparent;
     border: 1px solid #282422;
     color: #706c68;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
     padding: 0.4rem 1rem;
     border-radius: 4px;
@@ -82,7 +82,7 @@
 }
 
 .album-list-empty__title {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1.6rem;
     font-weight: 700;
     color: #343230;
@@ -110,7 +110,7 @@
     background: transparent;
     border: 1px solid #282422;
     color: #ddd9d1;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
     font-weight: 400;
     letter-spacing: 0.08em;

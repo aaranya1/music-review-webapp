@@ -1,7 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+/* ── Fonts ─────────────────────────────────────────────────────────────────────
+   To switch fonts: update the @import URL and the two variables below.
+   --font-heading : titles, labels, nav items
+   --font-body    : body text, UI, inputs
+   ──────────────────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap&family=Josefin+Sans:wght@300;400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 :root {
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Josefin Sans', sans-serif;
+
   color-scheme: light dark;
   background-color: #0e0c0a;
   color: rgba(255, 255, 255, 0.87);

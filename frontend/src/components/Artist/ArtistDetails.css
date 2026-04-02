@@ -1,7 +1,7 @@
 /* ── Root ── */
 .artist-detail-root {
     position: relative; /* contains the absolute hero-bg */
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     color: #ddd9d1;
     margin: -2rem; /* break out of #root's 2rem padding */
 }
@@ -118,7 +118,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 3rem;
     font-weight: 700;
 }
@@ -130,7 +130,7 @@
 }
 
 .artist-panel__name {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: clamp(1.9rem, 3.5vw, 2.7rem);
     font-weight: 700;
     color: #f2ede4;
@@ -158,7 +158,7 @@
 
 /* ── Shared text styles ── */
 .artist-hero__label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.68rem;
     font-weight: 400;
     letter-spacing: 0.18em;
@@ -168,7 +168,7 @@
 }
 
 .artist-hero__name {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: clamp(2rem, 5vw, 3.4rem);
     font-weight: 700;
     color: #f2ede4;
@@ -178,7 +178,7 @@
 }
 
 .artist-hero__count {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
     font-weight: 400;
     color: #706c68;
@@ -197,7 +197,7 @@
     background: transparent;
     border: 1px solid #282422;
     color: #706c68;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.68rem;
     font-weight: 400;
     letter-spacing: 0.12em;
@@ -251,7 +251,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 2.75rem;
     font-weight: 700;
 }
@@ -279,7 +279,7 @@
 }
 
 .artist-divider__label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 400;
     letter-spacing: 0.18em;
@@ -295,7 +295,7 @@
 }
 
 .artist-empty__title {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1.4rem;
     font-weight: 700;
     color: #343230;
@@ -303,7 +303,7 @@
 }
 
 .artist-empty__sub {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 400;
     font-style: italic;
@@ -330,7 +330,7 @@
 .artist-album-entry__meta { margin-top: 0.5rem; }
 
 .artist-album-entry__title {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 400;
     color: #c8c4bc;
@@ -341,7 +341,7 @@
 }
 
 .artist-album-entry__year {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.75rem;
     font-weight: 400;
     color: #44403c;

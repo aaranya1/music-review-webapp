@@ -1,5 +1,5 @@
 .album-detail-root {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     color: #ddd9d1;
     max-width: 860px;
     margin: 0 auto;
@@ -60,7 +60,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 5rem;
     font-weight: 700;
     color: #343230;
@@ -78,7 +78,7 @@
 /* ── Back link ── */
 .album-detail-back {
     display: inline-block;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.72rem;
     font-weight: 400;
     color: #706c68;
@@ -98,7 +98,7 @@
 }
 
 .album-detail-hero__label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 400;
     letter-spacing: 0.18em;
@@ -108,7 +108,7 @@
 }
 
 .album-detail-hero__title {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: clamp(2rem, 5vw, 3.2rem);
     font-weight: 700;
     color: #f2ede4;
@@ -118,7 +118,7 @@
 }
 
 .album-detail-hero__artists {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 1.1rem;
     font-weight: 400;
     font-style: italic;
@@ -135,7 +135,7 @@
 .album-detail-hero__artists a:hover { opacity: 0.75; }
 
 .album-detail-hero__year {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 400;
     color: #706c68;
@@ -164,14 +164,14 @@
 }
 
 .album-detail-rating__value {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1rem;
     font-weight: 700;
     color: #ddd9d1;
 }
 
 .album-detail-rating__count {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
     font-weight: 400;
     color: #706c68;
@@ -193,7 +193,7 @@
 }
 
 .rating-dist__label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.58rem;
     color: #44403c;
     width: 12px;
@@ -217,7 +217,7 @@
 }
 
 .rating-dist__count {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.58rem;
     color: #44403c;
     width: 14px;
@@ -226,7 +226,7 @@
 }
 
 .album-detail-rating--none {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
     font-weight: 400;
     font-style: italic;
@@ -235,7 +235,7 @@
 }
 
 .album-detail-hero__track-count {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.8rem;
     font-weight: 400;
     color: #706c68;
@@ -248,7 +248,7 @@
     background: transparent;
     border: 1px solid #4a4642;
     color: #ddd9d1;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
     font-weight: 400;
     letter-spacing: 0.1em;
@@ -280,7 +280,7 @@
 }
 
 .album-detail-divider__label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 400;
     letter-spacing: 0.18em;
@@ -296,7 +296,7 @@
 }
 
 .album-detail-empty__title {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 1.3rem;
     font-weight: 700;
     color: #343230;
@@ -304,7 +304,7 @@
 }
 
 .album-detail-empty__sub {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 400;
     color: #44403c;
@@ -320,7 +320,7 @@
 }
 
 .album-detail-disc__label {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 400;
     letter-spacing: 0.14em;
@@ -350,7 +350,7 @@
 }
 
 .album-detail-track__num {
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: var(--font-heading);
     font-size: 0.9rem;
     color: #44403c;
     width: 36px;
@@ -365,14 +365,14 @@
 }
 
 .album-detail-track__title-text {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.95rem;
     font-weight: 400;
     color: #ddd9d1;
 }
 
 .album-detail-track__artists {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.78rem;
     font-weight: 400;
     color: #706c68;
@@ -391,7 +391,7 @@
 }
 
 .album-detail-track__duration {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 400;
     color: #44403c;
@@ -429,7 +429,7 @@
 }
 
 .track-credits-drawer__empty {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
     font-weight: 400;
     font-style: italic;
@@ -451,7 +451,7 @@
 }
 
 .track-credits-list__role {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 400;
     letter-spacing: 0.12em;
@@ -462,7 +462,7 @@
 }
 
 .track-credits-list__names {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body);
     font-size: 0.88rem;
     font-weight: 400;
     color: #a0a09a;
