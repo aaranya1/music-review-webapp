@@ -39,3 +39,6 @@ pnpm-debug.log*
 
 # Claude Code
 .claude/
+
+# Internal
+implementation_plan.md
