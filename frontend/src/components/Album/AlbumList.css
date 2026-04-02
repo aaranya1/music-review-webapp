@@ -1,0 +1,141 @@
+.album-list-root {
+    font-family: 'Inter', sans-serif;
+    color: #ddd9d1;
+    padding: 2.5rem 0 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ── Header ── */
+.album-list-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.album-list-header__title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    color: #f2ede4;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.album-list-header__page {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: #706c68;
+    letter-spacing: 0.08em;
+}
+
+/* ── Grid — 5 columns, comfortable card size ── */
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .album-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .album-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 480px) {
+    .album-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Error ── */
+.album-list-error {
+    text-align: center;
+    padding: 4rem 0;
+    color: #e07070;
+    font-size: 0.9rem;
+}
+
+.album-list-error button {
+    margin-top: 1rem;
+    background: transparent;
+    border: 1px solid #282422;
+    color: #706c68;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.album-list-error button:hover {
+    border-color: #706c68;
+    color: #ddd9d1;
+}
+
+/* ── Empty state ── */
+.album-list-empty {
+    text-align: center;
+    padding: 5rem 0;
+}
+
+.album-list-empty__title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #343230;
+    margin: 0 0 0.5rem;
+}
+
+.album-list-empty__sub {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #44403c;
+    font-style: italic;
+    margin: 0;
+}
+
+/* ── Pagination ── */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 3rem;
+}
+
+.pagination button {
+    background: transparent;
+    border: 1px solid #282422;
+    color: #ddd9d1;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.5rem 1.25rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+    border-color: #ddd9d1;
+    color: #ddd9d1;
+}
+
+.pagination button:disabled {
+    opacity: 0.25;
+    cursor: default;
+}
+
+.page-label {
+    font-size: 0.78rem;
+    color: #706c68;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    min-width: 60px;
+    text-align: center;
+}

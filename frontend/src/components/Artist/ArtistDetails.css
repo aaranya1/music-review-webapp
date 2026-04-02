@@ -1,0 +1,380 @@
+/* ── Root ── */
+.artist-detail-root {
+    position: relative; /* contains the absolute hero-bg */
+    font-family: 'Inter', sans-serif;
+    color: #ddd9d1;
+    margin: -2rem; /* break out of #root's 2rem padding */
+}
+
+.artist-error {
+    color: #e07070;
+    text-align: center;
+    padding: 4rem 2rem;
+    font-size: 0.95rem;
+}
+
+/* ── Hero background — scrolls with page (position: absolute, NOT fixed) ── */
+.artist-hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 72vh;
+    min-height: 440px;
+    background-color: #0e0c0a;
+    background-size: cover;
+    background-position: center top;
+    z-index: 0;
+}
+
+/* Gradient overlay: darkens bottom so panel text is readable and
+   blends into the solid content background below */
+.artist-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 72vh;
+    min-height: 440px;
+    background: linear-gradient(
+        to bottom,
+        rgba(14, 12, 10, 0.08) 0%,
+        rgba(14, 12, 10, 0.45) 50%,
+        rgba(14, 12, 10, 0.88) 78%,
+        rgba(14, 12, 10, 1.00) 100%
+    );
+    z-index: 0;
+}
+
+/* ── Accent color glow — cinematic variant ── */
+/* Positioned absolute so it scrolls with the page; z-index 1 puts it above
+   the dark overlay but behind the panel (z-index 2) and solid content (z-index 1, later DOM) */
+.artist-accent-glow {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* ── Accent color glow — compact variant ── */
+/* Fixed so it spans the full viewport; z-index -1 keeps it behind all normal-flow content */
+.artist-compact-glow {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* ── Transparent spacer — scrollable area above the panel ── */
+.artist-hero-space {
+    position: relative;
+    z-index: 1;
+    height: 50vh;
+    min-height: 290px;
+}
+
+/* ── Sticky panel ── */
+.artist-panel {
+    position: sticky;
+    top: 62px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem 2.5rem 1.75rem;
+    background: linear-gradient(
+        to right,
+        rgba(14, 12, 10, 0.7) 0%,
+        rgba(14, 12, 10, 0.35) 50%,
+        transparent 100%
+    );
+    animation: panelFadeIn 0.5s ease both;
+}
+
+@keyframes panelFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.artist-panel__photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top center;
+    flex-shrink: 0;
+    display: block;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 6px 36px rgba(0, 0, 0, 0.85);
+}
+
+.artist-panel__fallback {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: rgba(26, 24, 22, 0.75);
+    border: 1.5px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.artist-panel__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.artist-panel__name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.9rem, 3.5vw, 2.7rem);
+    font-weight: 700;
+    color: #f2ede4;
+    margin: 0 0 0.15rem;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+}
+
+/* ── Discography content — solid dark, scrolls below the hero ── */
+.artist-content {
+    position: relative;
+    z-index: 1;
+    background: #0e0c0a;
+    padding: 3rem 3rem 6rem;
+    min-height: 50vh;
+}
+
+/* ── Discography header row (divider + sort toggle) ── */
+.artist-discography-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+/* ── Shared text styles ── */
+.artist-hero__label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #9a9690;
+    margin: 0 0 0.3rem;
+}
+
+.artist-hero__name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 700;
+    color: #f2ede4;
+    margin: 0 0 0.4rem;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+}
+
+.artist-hero__count {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: #706c68;
+    margin: 0;
+    letter-spacing: 0.04em;
+}
+
+/* ── Sort toggle ── */
+.artist-sort {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: flex-end;
+}
+
+.artist-sort__btn {
+    background: transparent;
+    border: 1px solid #282422;
+    color: #706c68;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.7rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.artist-sort__btn--active {
+    border-color: #4a4642;
+    color: #ddd9d1;
+}
+
+.artist-sort__btn:hover:not(.artist-sort__btn--active) {
+    border-color: #3a3836;
+    color: #9a9690;
+}
+
+/* ── Compact header (no background image) ── */
+.artist-compact-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+    border-bottom: 1px solid #282422;
+}
+
+.artist-compact-header__photo-wrap { flex-shrink: 0; }
+
+.artist-compact-header__photo {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    border: 1px solid #282422;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.artist-compact-header__photo-fallback {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: #1a1816;
+    border: 1.5px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.75rem;
+    font-weight: 700;
+}
+
+.artist-compact-header__info { flex: 1; }
+
+.artist-detail-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ── Divider ── */
+.artist-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0;
+}
+
+.artist-divider__line {
+    flex: 1;
+    height: 1px;
+    background: #282422;
+}
+
+.artist-divider__label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #706c68;
+    white-space: nowrap;
+}
+
+/* ── Empty state ── */
+.artist-empty {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.artist-empty__title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #343230;
+    margin: 0 0 0.4rem;
+}
+
+.artist-empty__sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    font-style: italic;
+    color: #44403c;
+    margin: 0;
+}
+
+/* ── Album grid ── */
+.artist-album-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 1.75rem 1.25rem;
+}
+
+.artist-album-entry {
+    animation: fadeSlideUp 0.35s ease both;
+}
+
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.artist-album-entry__meta { margin-top: 0.5rem; }
+
+.artist-album-entry__title {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #c8c4bc;
+    margin: 0 0 0.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.artist-album-entry__year {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #44403c;
+    letter-spacing: 0.04em;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+    .artist-hero-space {
+        height: 28vh;
+        min-height: 160px;
+    }
+
+    .artist-panel {
+        position: relative;
+        top: auto;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.25rem 1.5rem 1.5rem;
+        background: none;
+        animation: none;
+    }
+
+    .artist-panel__photo,
+    .artist-panel__fallback {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+
+    .artist-panel__name { font-size: 1.75rem; }
+
+    .artist-content { padding: 2rem 1.5rem 4rem; }
+
+    .artist-sort { justify-content: flex-start; }
+}

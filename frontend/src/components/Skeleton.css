@@ -1,0 +1,129 @@
+/* ── Base shimmer ── */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        #1a1c1a 25%,
+        #242624 50%,
+        #1a1c1a 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ── Spacing helpers used inline ── */
+.mt-sm { margin-top: 0.6rem; }
+.mt-md { margin-top: 1.2rem; }
+
+/* ── Album card skeleton ── */
+.album-card-skeleton {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.album-card-skeleton__img {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+}
+
+/* ── Album detail skeleton ── */
+.album-detail-skeleton {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 0 4rem;
+}
+
+.album-detail-skeleton__hero {
+    display: flex;
+    gap: 2.5rem;
+    align-items: flex-start;
+    margin-bottom: 3rem;
+}
+
+.album-detail-skeleton__cover {
+    width: 220px;
+    height: 220px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.album-detail-skeleton__info {
+    flex: 1;
+    padding-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.album-detail-skeleton__tracks {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.album-detail-skeleton__track-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* ── Artist list card skeleton ── */
+.artist-card-skeleton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.artist-card-skeleton__img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+}
+
+.artist-card-skeleton__name {
+    width: 65%;
+    height: 0.75rem;
+    border-radius: 4px;
+}
+
+/* ── Artist detail skeleton ── */
+.artist-detail-skeleton {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.5rem 0 4rem;
+}
+
+.artist-detail-skeleton__hero {
+    display: flex;
+    gap: 2.5rem;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.artist-detail-skeleton__photo {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.artist-detail-skeleton__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.artist-detail-skeleton__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}

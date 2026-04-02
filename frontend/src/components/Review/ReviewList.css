@@ -1,0 +1,207 @@
+/* ── Star picker ── */
+.star-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    margin-bottom: 0.75rem;
+}
+
+.star-picker__star {
+    font-size: 1.5rem;
+    cursor: pointer;
+    user-select: none;
+    line-height: 1;
+}
+
+.star-picker__fill { transition: color 0.1s; }
+.star-picker__fill.full  { color: #c8a96e; }
+.star-picker__fill.half  { color: #4a4642; }
+.star-picker__fill.empty { color: #282422; }
+
+.star-picker__value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #c8a96e;
+    margin-left: 0.5rem;
+}
+
+/* ── Star display ── */
+.star-rating {
+    color: #c8a96e;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+}
+
+/* ── List ── */
+.review-list { display: flex; flex-direction: column; }
+
+.review-list__loader {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.review-list__empty {
+    font-family: 'Inter', sans-serif;
+    color: #706c68;
+    font-size: 0.9rem;
+    font-weight: 400;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+/* ── Review item ── */
+.review-item {
+    padding: 1.2rem 0;
+    border-bottom: 1px solid #282422;
+    font-family: 'Inter', sans-serif;
+}
+
+.review-item:last-child { border-bottom: none; }
+
+.review-item--own {
+    border-left: 2px solid #4a4642;
+    padding-left: 1rem;
+}
+
+/* ── Header ── */
+.review-item__header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.review-item__username {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #ddd9d1;
+    letter-spacing: 0.02em;
+}
+
+.review-item__rating-val {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #ddd9d1;
+}
+
+.review-item__edited {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: #706c68;
+    font-style: italic;
+    letter-spacing: 0.05em;
+}
+
+/* ── Comment ── */
+.review-item__comment {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 400;
+    color: #ddd9d1;
+    line-height: 1.65;
+    margin: 0 0 0.6rem;
+}
+
+/* ── Actions ── */
+.review-item__actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.review-item__edit-btn,
+.review-item__cancel-btn {
+    background: transparent;
+    border: 1px solid #282422;
+    color: #706c68;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.85rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.review-item__edit-btn:hover,
+.review-item__cancel-btn:hover {
+    border-color: #4a4642;
+    color: #ddd9d1;
+}
+
+.review-item__delete-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #706c68;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.85rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.review-item__delete-btn:hover {
+    border-color: #c0564a;
+    color: #c0564a;
+}
+
+/* ── Edit mode ── */
+.review-item__edit { display: flex; flex-direction: column; }
+
+.review-item__textarea {
+    background: #0e0c0a;
+    border: 1px solid #282422;
+    border-radius: 4px;
+    color: #ddd9d1;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 400;
+    padding: 0.65rem 0.85rem;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    margin-bottom: 0.75rem;
+    line-height: 1.65;
+}
+
+.review-item__textarea:focus {
+    outline: none;
+    border-color: #4a4642;
+}
+
+.review-item__edit-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.review-item__save-btn {
+    background: #ddd9d1;
+    color: #0e0c0a;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.4rem 1.1rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.review-item__save-btn:hover:not(:disabled) { opacity: 0.85; }
+.review-item__save-btn:disabled { opacity: 0.35; cursor: default; }

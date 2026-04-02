@@ -1,0 +1,196 @@
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 8, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.modal {
+    position: relative;
+    background: #1a1816;
+    border: 1px solid #282422;
+    border-radius: 10px;
+    padding: 2rem 2.25rem 2.25rem;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+    animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: #706c68;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.25rem 0.4rem;
+    border-radius: 3px;
+    transition: color 0.15s;
+    line-height: 1;
+}
+
+.modal__close:hover { color: #ddd9d1; }
+
+.modal__label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #706c68;
+    margin: 0 0 0.3rem;
+}
+
+.modal__title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #f2ede4;
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.modal__divider {
+    height: 1px;
+    background: #282422;
+    margin: 1.25rem 0;
+}
+
+.modal__field-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #706c68;
+    margin: 0 0 0.5rem;
+}
+
+.modal__optional {
+    font-size: 0.68rem;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #44403c;
+}
+
+.star-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    margin-bottom: 1.25rem;
+}
+
+.star-picker__star {
+    font-size: 1.8rem;
+    cursor: pointer;
+    user-select: none;
+    line-height: 1;
+}
+
+.star-picker__fill { transition: color 0.1s; }
+.star-picker__fill.full  { color: #c8a96e; }
+.star-picker__fill.half  { color: #4a4642; }
+.star-picker__fill.empty { color: #282422; }
+
+.star-picker__value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #c8a96e;
+    margin-left: 0.6rem;
+}
+
+.modal__textarea {
+    width: 100%;
+    background: #0e0c0a;
+    border: 1px solid #282422;
+    border-radius: 4px;
+    color: #ddd9d1;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 400;
+    padding: 0.75rem 0.9rem;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+}
+
+.modal__textarea:focus {
+    outline: none;
+    border-color: #4a4642;
+}
+
+.modal__textarea::placeholder { color: #44403c; }
+
+.modal__error {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    color: #e07070;
+    margin: 0.6rem 0 0;
+}
+
+.modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.modal__cancel {
+    background: transparent;
+    border: 1px solid #282422;
+    color: #706c68;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.55rem 1.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.modal__cancel:hover {
+    border-color: #706c68;
+    color: #ddd9d1;
+}
+
+.modal__submit {
+    background: #ddd9d1;
+    color: #0e0c0a;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.55rem 1.4rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.modal__submit:hover:not(:disabled) { opacity: 0.85; }
+.modal__submit:disabled { opacity: 0.35; cursor: default; }

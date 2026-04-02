@@ -1,0 +1,224 @@
+.search-page {
+    font-family: 'Inter', sans-serif;
+    color: #ddd9d1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2.5rem 0 4rem;
+}
+
+/* ── Search bar ── */
+.search-page__bar {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+}
+
+.search-page__input {
+    flex: 1;
+    background: #1a1816;
+    border: 1px solid #282422;
+    border-radius: 6px;
+    color: #ddd9d1;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    padding: 0.7rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-page__input:focus { border-color: #4a4642; }
+.search-page__input::placeholder { color: #44403c; }
+
+.search-page__btn {
+    background: transparent;
+    border: 1px solid #4a4642;
+    color: #ddd9d1;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.7rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+
+.search-page__btn:hover {
+    background: #ddd9d1;
+    color: #0e0c0a;
+}
+
+/* ── States ── */
+.search-page__hint,
+.search-page__empty {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #706c68;
+    font-style: italic;
+    text-align: center;
+    padding: 3rem 0;
+    margin: 0;
+}
+
+.search-page__empty em { color: #ddd9d1; font-style: normal; }
+
+.search-page__error {
+    color: #e07070;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.search-page__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: #706c68;
+    font-size: 0.82rem;
+    font-weight: 400;
+    padding: 3rem 0;
+}
+
+.search-page__spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #282422;
+    border-top-color: #ddd9d1;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Section ── */
+.search-section {
+    margin-bottom: 2.5rem;
+}
+
+.search-section__header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 0.75rem;
+}
+
+.search-section__label {
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #706c68;
+    white-space: nowrap;
+}
+
+.search-section__line {
+    flex: 1;
+    height: 1px;
+    background: #282422;
+}
+
+/* ── Result list ── */
+.search-result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+/* ── Animation wrapper ── */
+.search-result-anim {
+    animation: fadeSlideUp 0.3s ease both;
+}
+
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Result card ── */
+.search-result-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #ddd9d1;
+    border-bottom: 1px solid #282422;
+    transition: background 0.15s;
+}
+
+.search-result-card:last-child { border-bottom: none; }
+.search-result-card:hover { background: #1a1816; }
+
+/* ── Cover ── */
+.search-result-card__cover-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #282422;
+    flex-shrink: 0;
+}
+
+.search-result-card__cover-wrap--round {
+    border-radius: 50%;
+}
+
+.search-result-card__cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.search-result-card__cover-fallback {
+    width: 100%;
+    height: 100%;
+    background: #1a1816;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.2rem;
+    color: #4a4642;
+}
+
+/* ── Body ── */
+.search-result-card__body { flex: 1; min-width: 0; }
+
+.search-result-card__title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ddd9d1;
+    margin: 0 0 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-card__sub {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #706c68;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-card__sub--label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ddd9d1;
+}
+
+.search-result-card__year { color: #706c68; }

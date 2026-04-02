@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: jukeboxed-db
+    restart: always
+    environment:
+      POSTGRES_USER: jukeboxed
+      POSTGRES_PASSWORD: jukeboxed
+      POSTGRES_DB: jukeboxed
+    ports:
+      - "5431:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
