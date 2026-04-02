@@ -14,7 +14,9 @@ from routes.home import home_bp
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=['http://localhost:5173'])
+
+_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
+CORS(app, supports_credentials=True, origins=[o.strip() for o in _origins])
 
 app.config['JWT_ACCESS_KEY'] = os.getenv('JWT_ACCESS_KEY')
 app.config['JWT_REFRESH_KEY'] = os.getenv('JWT_REFRESH_KEY')

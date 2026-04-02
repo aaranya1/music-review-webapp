@@ -4,7 +4,9 @@ from functools import wraps
 from models import User
 from db import db
 from tokens import create_access_token, create_refresh_token
-import jwt, os
+import jwt, os, re
+
+_EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -35,7 +37,13 @@ def register():
 
     if not username or not password or not email:
         return {"message": "Username, email, and password are required"}, 400
-    
+
+    if not _EMAIL_RE.match(email):
+        return {"message": "Invalid email address"}, 400
+
+    if len(password) < 8:
+        return {"message": "Password must be at least 8 characters"}, 400
+
     if User.query.filter_by(username=username).first():
         return {"message": "Username already exists"}, 409
     
@@ -75,12 +83,13 @@ def login():
         "token_type": "Bearer"
     })
 
+    is_prod = os.getenv('FLASK_ENV') == 'production'
     response.set_cookie(
         'refresh_token',
         refresh_token,
         httponly=True,
-        secure=False,
-        samesite='Lax',
+        secure=is_prod,
+        samesite='Strict' if is_prod else 'Lax',
         max_age=7*24*60*60
     )
 
