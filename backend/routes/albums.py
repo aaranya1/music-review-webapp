@@ -21,7 +21,7 @@ def get_albums():
         album_data = {
             'mbid': album.mbid, 
             'title': album.title, 
-            'release_year': album.release_year,
+            'release_year': album.release_date.year if album.release_date else None,
             'cover_url': album.cover_url,
             'artists': [{'mbid': artist.mbid, 'name': artist.name} 
                         for artist in album.artists],
@@ -85,9 +85,10 @@ def get_album(mbid):
     )
 
     return {
-        "mbid": album.mbid, 
-        "title": album.title, 
-        "release_year": album.release_year,
+        "mbid": album.mbid,
+        "title": album.title,
+        "release_year": album.release_date.year if album.release_date else None,
+        "release_date": album.release_date.isoformat() if album.release_date else None,
         "cover_url": album.cover_url,
         "artists": [{'mbid': artist.mbid, 'name': artist.name} for artist in album.artists],
         "tracklist": tracklist,

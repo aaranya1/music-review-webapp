@@ -114,6 +114,51 @@ def search_mb_rels(type, mbid, inc='url-rels', retries=3):
     print("All retry attempts failed.")
     return {}
 
+def browse_releases(rg_mbid, retries=3):
+    """
+    Fetch all official releases in a release group via the browse API.
+    Returns a list of release dicts with media/format info.
+    """
+    global _last_request_time
+    offset = 0
+    limit = 100
+    all_releases = []
+
+    while True:
+        for attempt in range(retries):
+            try:
+                _rate_limit()
+                params = {
+                    'release-group': rg_mbid,
+                    'status': 'official',
+                    'inc': 'media+release-groups',
+                    'fmt': 'json',
+                    'limit': limit,
+                    'offset': offset,
+                }
+                response = requests.get(
+                    f'{BASE_URL}/release/',
+                    headers=HEADERS,
+                    params=params,
+                    timeout=10
+                )
+                response.raise_for_status()
+                _last_request_time = time.time()
+                data = response.json()
+                releases = data.get('releases', [])
+                all_releases.extend(releases)
+                if offset + limit >= data.get('release-count', 0):
+                    return all_releases
+                offset += limit
+                break
+            except RequestException as e:
+                print(f'  browse_releases attempt {attempt+1} failed: {e}')
+                time.sleep(2)
+        else:
+            print('  browse_releases: all retries failed')
+            return all_releases
+
+
 def normalize_release(release):
     artist_credit = release.get('artist-credit', [])
 

@@ -67,8 +67,9 @@ class Artist(db.Model):
 class Album(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     mbid = db.Column(db.String(36), nullable=False, unique=True, index=True)
+    release_group_mbid = db.Column(db.String(36), nullable=True, index=True)
     title = db.Column(db.String(255), nullable=False)
-    release_year = db.Column(db.Integer)
+    release_date = db.Column(db.Date, nullable=True)
     cover_url = db.Column(db.Text, nullable=True)
     color_accent = db.Column(db.String(7), nullable=True)  # e.g. '#c84b38'
     discogs_id = db.Column(db.Integer, nullable=True, unique=True, index=True)
@@ -82,7 +83,7 @@ class Album(db.Model):
     )
 
     def __repr__(self):
-        return f'<Album {self.title} from {self.release_year}>'
+        return f'<Album {self.title} from {self.release_date}>'
     
 
 class Track(db.Model):
