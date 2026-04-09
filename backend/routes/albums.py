@@ -1,5 +1,5 @@
 from flask import Blueprint
-from models import Album, Review, Track, Credit
+from models import Album, Review, Track, Credit, ReviewLike, ReviewComment
 from db import db
 from routes.auth import token_required
 from flask import request, g
@@ -13,7 +13,7 @@ def get_albums():
     per_page = min(request.args.get('per_page', 20, type=int), 50)
 
     pagination = Album.query.options(selectinload(Album.artists)) \
-        .order_by(Album.release_year.desc(), Album.id.desc()) \
+        .order_by(Album.release_date.desc(), Album.id.desc()) \
         .paginate(page=page, per_page=per_page, error_out=False)
      
     output = []
@@ -103,18 +103,23 @@ def get_album_reviews(mbid):
     reviews = (
         Review.query
         .filter_by(album_id=album.id)
-        .options(db.joinedload(Review.user))
+        .options(
+            db.joinedload(Review.user),
+            selectinload(Review.likes),
+            selectinload(Review.comments),
+        )
         .all()
     )
     album_reviews = []
     for review in reviews:
-        user = review.user
         album_reviews.append({
             "id": review.id,
             "user_id": review.user_id,
-            "username": user.username,
+            "username": review.user.username,
             "rating": review.rating,
             "comment": review.review_text,
+            "like_count": len(review.likes),
+            "comment_count": len(review.comments),
             "created_at": review.created_at,
             "updated_at": review.updated_at
         })

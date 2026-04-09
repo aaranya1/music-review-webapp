@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from app import app
 from db import db
-from models import Album, Artist, Track
+from models import Album, Artist, Track, album_artist
 from services.musicbrainz import search_mb, search_cover_art, normalize_release, search_mb_rels, browse_releases
 import requests
 import time
@@ -28,7 +28,7 @@ FORMAT_PRIORITY = ['Digital Media', 'CD', 'Vinyl', 'Cassette']
 # ── Artists to seed ────────────────────────────────────────────────────────────
 
 NEW_ARTISTS = [
-    # Rock / Alt
+    # Rock / Alt / Indie
     "Radiohead",
     "Tame Impala",
     "The Strokes",
@@ -48,6 +48,13 @@ NEW_ARTISTS = [
     "Florence and the Machine",
     "Bon Iver",
     "Sufjan Stevens",
+    "Sharon Van Etten",
+    "Sturgill Simpson",
+    "Sheryl Crow",
+    "Tegan and Sara",
+    "Sarah McLachlan",
+    "Tricky",
+    "Switchfoot",
 
     # Hip-hop / R&B
     "Tyler, the Creator",
@@ -70,8 +77,123 @@ NEW_ARTISTS = [
     "6LACK",
     "Daniel Caesar",
     "H.E.R.",
+    "Nas",
+    "GZA",
+    "Method Man",
+    "RZA",
+    "Mobb Deep",
+    "Public Enemy",
+    "LL Cool J",
+    "Q-Tip",
+    "Tupac Shakur",
+    "Ice Cube",
+    "Ludacris",
+    "Lupe Fiasco",
+    "Fugees",
+    "Missy Elliott",
+    "Queen Latifah",
+    "Ja Rule",
+    "Jadakiss",
+    "Remy Ma",
+    "Jodeci",
+    "Juvenile",
+    "UGK",
+    "Afrika Bambaataa",
+    "Biz Markie",
+    "KRS-One",
+    "Rakim",
+    "Raekwon",
+    "Kool G Rap",
+    "Kool Keith",
+    "Redman",
+    "Immortal Technique",
+    "Jurassic 5",
+    "Pharoahe Monch",
+    "Roc Marciano",
+    "Sean Price",
+    "Talib Kweli",
+    "Killer Mike",
+    "Gil Scott-Heron",
+    "JPEGMAFIA",
+    "Flatbush Zombies",
+    "Injury Reserve",
+    "Shabazz Palaces",
+    "Noname",
+    "Loyle Carner",
+    "Mick Jenkins",
+    "Rapsody",
+    "Oddisee",
+    "GoldLink",
+    "Open Mike Eagle",
+    "Joyner Lucas",
+    "Rich Brian",
+    "Rejjie Snow",
+    "Your Old Droog",
+    "Westside Boogie",
+    "Saba",
+    "Smino",
+    "Tierra Whack",
+    "Yeat",
+    "Trippie Redd",
+    "Kodak Black",
+    "French Montana",
+    "Quavo",
+    "Migos",
+    "Gucci Mane",
+    "Bobby Shmurda",
+    "Young Nudy",
+    "Latto",
+    "A-Reece",
+    "Tobe Nwigwe",
+    "George the Poet",
+    "Hanumankind",
+    "Koba LaD",
+    "Gradur",
+    "Lartiste",
+    "Nekfeu",
+    "Niska",
+    "Capital Bra",
+    "Kali Uchis",
+    "Kehlani",
+    "Jill Scott",
+    "Jazmine Sullivan",
+    "Janelle Monae",
+    "Summer Walker",
+    "Ty Dolla $ign",
+    "Sevyn Streeter",
+    "Trey Songz",
+    "Monica",
+    "SWV",
+    "Usher",
+    "Toni Braxton",
+    "Kelly Rowland",
+    "Justin Timberlake",
+    "India.Arie",
+    "Ledisi",
+    "Raphael Saadiq",
+    "Lalah Hathaway",
+    "Maxwell",
+    "Musiq Soulchild",
+    "Meshell Ndegeocello",
+    "Tank and the Bangas",
+    "Snoh Aalegra",
+    "Masego",
+    "Terrace Martin",
+    "Robert Glasper",
+    "Kamasi Washington",
+    "Roy Ayers",
+    "Roy Hargrove",
+    "Trombone Shorty",
+    "Kassa Overall",
+    "Saul Williams",
+    "Luther Vandross",
+    "Marvin Gaye",
+    "Otis Redding",
+    "Stevie Wonder",
+    "George Clinton",
+    "Mavis Staples",
 
-    # Pop
+    # Pop / Singer-Songwriter
     "Charli XCX",
     "Gracie Abrams",
     "Olivia Rodrigo",
@@ -92,6 +214,37 @@ NEW_ARTISTS = [
     "Sigrid",
     "Ava Max",
     "Anne-Marie",
+    "Kylie Minogue",
+    "Janet Jackson",
+    "Madonna",
+    "Gwen Stefani",
+    "Shania Twain",
+    "Ricky Martin",
+    "Zayn",
+    "PinkPantheress",
+    "Shygirl",
+    "Stefflon Don",
+    "Ravyn Lenae",
+    "Faye Webster",
+    "Syd",
+    "Mahalia",
+    "Jorja Smith",
+    "Teddy Swims",
+    "Gallant",
+    "Tiana Major9",
+    "Sampha",
+    "Tkay Maidza",
+    "Yves Tumor",
+    "Ethel Cain",
+    "Serpentwithfeet",
+    "Pa Salieu",
+    "Obongjayar",
+    "Teezo Touchdown",
+    "Steve Lacy",
+    "Jacob Banks",
+    "Norah Jones",
+    "Grace Jones",
+    "Robyn",
 
     # Electronic / Dance
     "Four Tet",
@@ -105,8 +258,23 @@ NEW_ARTISTS = [
     "Jungle",
     "Parcels",
     "Nils Frahm",
+    "Flying Lotus",
+    "Floating Points",
+    "FKA twigs",
+    "Grimes",
+    "Toro y Moi",
+    "ZHU",
+    "Major Lazer",
+    "Swedish House Mafia",
+    "Steve Aoki",
+    "Santigold",
+    "TOKiMONSTA",
+    "Shlohmo",
+    "TSHA",
+    "Little Dragon",
+    "Armin van Buuren",
 
-    # Latin
+    # Latin / Brazilian / Flamenco
     "Myke Towers",
     "Sech",
     "Jhay Cortez",
@@ -115,8 +283,25 @@ NEW_ARTISTS = [
     "Mora",
     "Bad Gyal",
     "Rosalía",
+    "Natalia Lafourcade",
+    "Natanael Cano",
+    "Romeo Santos",
+    "Marc Anthony",
+    "Juan Luis Guerra",
+    "Juanes",
+    "Grupo Frontera",
+    "Fuerza Regida",
+    "Quevedo",
+    "Bizarrap",
+    "Trueno",
+    "Gilberto Gil",
+    "Milton Nascimento",
+    "Marisa Monte",
+    "Gal Costa",
+    "Seu Jorge",
+    "Os Mutantes",
 
-    # Global / Other
+    # Afrobeats / African
     "Burna Boy",
     "WizKid",
     "Tems",
@@ -125,8 +310,77 @@ NEW_ARTISTS = [
     "Omah Lay",
     "Ckay",
     "Yemi Alade",
+    "Olamide",
+    "Fela Kuti",
+    "Seun Kuti",
+    "Tiwa Savage",
+    "Patoranking",
+    "Wande Coal",
+    "Mayorkun",
+    "Kizz Daniel",
+    "Tekno",
+    "Kojo Funds",
+    "Sarkodie",
+    "Stonebwoy",
+    "Shatta Wale",
+    "Focalistic",
+    "Tyler ICU",
+    "Samthing Soweto",
+    "Ami Faku",
+    "Simphiwe Dana",
+    "Zinoleesky",
+    "Salif Keita",
+    "Youssou N'Dour",
+    "Angelique Kidjo",
+    "Tiken Jah Fakoly",
+    "Zap Mama",
+    "Toumani Diabaté",
+    "Hugh Masekela",
+    "Odunsi (The Engine)",
+    "Lous and the Yakuza",
+
+    # Dancehall / Reggae
+    "Stormzy",
+    "Koffee",
+    "Shenseea",
+    "Chronixx",
+    "Kabaka Pyramid",
+    "Popcaan",
+    "Shabba Ranks",
+    "Sizzla",
+    "Tarrus Riley",
+    "Ziggy Marley",
+    "Toots and the Maytals",
+    "Sauti Sol",
+    "Ladysmith Black Mambazo",
+
+    # UK / European
+    "Little Simz",
+    "Kano",
+    "Roots Manuva",
+    "Kojey Radical",
+    "Wretch 32",
+    "Loyle Carner",
+    "Stromae",
+    "Jacob Collier",
+    "Ibeyi",
+    "Arooj Aftab",
+
+    # Jazz / Soul / Classic
+    "Herbie Hancock",
+    "John Lennon",
+    "Paul McCartney",
+    "Bruce Springsteen",
+    "Stevie Nicks",
+    "Gorillaz",
+
+    # Brazilian / Latin / World
     "Anitta",
     "Ludmilla",
+
+    # Global / Other
+    "Yung Gravy",
+    "Lartiste",
 ]
 
 ARTISTS_BY_FRIENDS = [
@@ -321,7 +575,7 @@ def _seed_tracks(album, release_data):
     return added
 
 
-def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='missing'):
+def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='missing', existing_album=None):
     """
     Fetch all releases for a release group, apply selection algorithm,
     upsert the album record, seed tracks, enrich feat titles.
@@ -330,9 +584,10 @@ def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='m
       'missing' — skip if album with this rg_mbid already exists
       'force'   — update existing album if found
       'reseed'  — same as force, used for existing-album re-seeding
+    existing_album — pass the known DB album to skip the lookup (used by reseed_existing_albums)
     """
-    # Check existing by release group MBID
-    existing = Album.query.filter_by(release_group_mbid=rg_mbid).first()
+    # Check existing by release group MBID (or use explicitly passed object)
+    existing = existing_album or Album.query.filter_by(release_group_mbid=rg_mbid).first()
     if existing and mode == 'missing':
         print(f'  Already seeded: {existing.title}, skipping.')
         return
@@ -360,6 +615,10 @@ def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='m
         print(f'  No valid date for "{title}", skipping.')
         return
 
+    if len(title) > 255:
+        print(f'  Title too long ({len(title)} chars), skipping.')
+        return
+
     # Fetch full release data with recordings
     release_data = search_mb_rels('release', release_mbid, inc='recordings+artist-credits')
     if not release_data:
@@ -373,14 +632,38 @@ def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='m
     album = existing or Album.query.filter_by(mbid=release_mbid).first()
     if album:
         old_mbid = album.mbid
+        mbid_unchanged = (old_mbid == release_mbid)
+
+        if mbid_unchanged and mode == 'reseed':
+            # Same release — just refresh feat titles and artist linking, skip full reseed
+            t_updated, a_linked, _, _ = _enrich_feat_titles_for_album(album, release_data=release_data)
+            try:
+                db.session.commit()
+                print(f'  ✓ {title} — MBID unchanged, {t_updated} titles enriched | {a_linked} artists linked')
+            except Exception as e:
+                db.session.rollback()
+                print(f'  ✗ Commit failed for "{title}": {e}')
+            return
+
+        # MBID is changing — remove any conflicting row that already holds the new MBID
+        if not mbid_unchanged:
+            conflict = Album.query.filter_by(mbid=release_mbid).first()
+            if conflict and conflict.id != album.id:
+                print(f'  Removing duplicate album row (id={conflict.id}, mbid={release_mbid})')
+                db.session.delete(conflict)
+                db.session.flush()
+            # Wipe existing tracks so they're re-seeded clean
+            for t in list(album.tracks):
+                db.session.delete(t)
+            db.session.flush()
+            print(f'  MBID: {old_mbid} → {release_mbid}')
+
         album.mbid = release_mbid
         album.release_group_mbid = rg_mbid
         album.title = title
         album.release_date = release_date
         if cover_url:
             album.cover_url = cover_url
-        if old_mbid != release_mbid:
-            print(f'  MBID: {old_mbid} → {release_mbid}')
     else:
         album = Album(
             mbid=release_mbid,
@@ -393,7 +676,15 @@ def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='m
 
     # Update artist credits
     if artist_objs:
-        album.artists = artist_objs
+        new_ids = {a.id for a in artist_objs if a.id}
+        current_ids = {a.id for a in album.artists if a.id}
+        if new_ids != current_ids:
+            # Clear via raw delete to avoid stale association row counts
+            db.session.execute(
+                album_artist.delete().where(album_artist.c.album_id == album.id)
+            )
+            db.session.flush()
+            album.artists = artist_objs
     else:
         # Pull from release artist-credit if no explicit artist_objs passed
         for credit in best.get('artist-credit', []):
@@ -424,8 +715,8 @@ def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='m
         print(f'  ✗ Commit failed for "{title}": {e}')
 
 
-def _get_valid_release_groups(artist_mbid, include_eps=True):
-    """Fetch and filter release groups for an artist."""
+def _get_valid_release_groups(artist_mbid):
+    """Fetch official album release groups for an artist (no EPs, no secondary types)."""
     rg_base = f'arid:{artist_mbid} AND status:official'
 
     album_rgs = search_mb(
@@ -434,35 +725,69 @@ def _get_valid_release_groups(artist_mbid, include_eps=True):
         limit=100
     ).get('release-groups', [])
 
-    ep_rgs = []
-    if include_eps:
-        ep_rgs = search_mb(
-            'release-group',
-            f'{rg_base} AND primarytype:ep',
-            limit=50
-        ).get('release-groups', [])
+    valid = []
+    for rg in album_rgs:
+        if rg.get('secondary-types'):
+            continue
+        valid.append(rg)
+    return sorted(valid, key=lambda x: x.get('first-release-date', ''), reverse=True)
 
-    def _filter(rgs):
-        valid = []
-        for rg in rgs:
-            secondary = [t.lower() for t in rg.get('secondary-types', [])]
-            if any(t in SECONDARY_TYPE_BLOCKLIST for t in secondary):
+
+def dedupe_albums(since_date=None):
+    """
+    Remove new duplicate album rows created after since_date that have an older
+    counterpart with the same title and at least one shared artist.
+    Keeps the older row (no release_group_mbid), deletes the newer duplicate.
+    """
+    from datetime import datetime
+    if since_date is None:
+        since_date = datetime(2026, 4, 3)  # today — when missing-albums ran
+
+    with app.app_context():
+        new_albums = Album.query.filter(Album.created_at >= since_date).all()
+        print(f'Found {len(new_albums)} albums created since {since_date.date()}.')
+        deleted = 0
+
+        for new in new_albums:
+            new_artist_ids = {a.id for a in new.artists}
+            if not new_artist_ids:
                 continue
-            valid.append(rg)
-        return sorted(valid, key=lambda x: x.get('first-release-date', ''), reverse=True)
 
-    return _filter(album_rgs), _filter(ep_rgs)
+            # Find older album with same title and at least one shared artist
+            old = (
+                Album.query
+                .filter(
+                    Album.created_at < since_date,
+                    Album.title == new.title
+                )
+                .all()
+            )
+            match = next(
+                (a for a in old if {x.id for x in a.artists} & new_artist_ids),
+                None
+            )
+            if match:
+                print(f'  Deleting new duplicate: "{new.title}" id={new.id} (keeping older id={match.id})')
+                db.session.delete(new)
+                deleted += 1
+
+        db.session.commit()
+        print(f'Done. Deleted {deleted} duplicate album rows.')
 
 
 # ── Seeding modes ──────────────────────────────────────────────────────────────
 
-def reseed_existing_albums():
+def reseed_existing_albums(before_date=None):
     """
     Re-seed all albums already in the DB using the new algorithm.
     Updates MBID, release_group_mbid, release_date, tracks, feat titles.
+    If before_date is given (datetime), only reseeds albums created before that date.
     """
     with app.app_context():
-        albums = Album.query.order_by(Album.id).all()
+        query = Album.query.order_by(Album.id)
+        if before_date:
+            query = query.filter(Album.created_at < before_date)
+        albums = query.all()
         print(f'Re-seeding {len(albums)} existing albums...\n')
         artist_cache = {}
 
@@ -470,27 +795,32 @@ def reseed_existing_albums():
             artist_name = album.artists[0].name if album.artists else '?'
             print(f'[{i+1}/{len(albums)}] {album.title} — {artist_name}')
 
-            # If we already have a release_group_mbid, use it directly
-            if album.release_group_mbid:
-                rg_mbid = album.release_group_mbid
-            else:
-                # Derive release group from the existing release MBID
-                release_data = search_mb_rels('release', album.mbid, inc='release-groups')
-                if not release_data:
-                    print(f'  ✗ No MB data, skipping')
-                    continue
-                rg_mbid = release_data.get('release-group', {}).get('id')
-                if not rg_mbid:
-                    print(f'  ✗ No release group found, skipping')
-                    continue
+            try:
+                # If we already have a release_group_mbid, use it directly
+                if album.release_group_mbid:
+                    rg_mbid = album.release_group_mbid
+                else:
+                    # Derive release group from the existing release MBID
+                    release_data = search_mb_rels('release', album.mbid, inc='release-groups')
+                    if not release_data:
+                        print(f'  ✗ No MB data, skipping')
+                        continue
+                    rg_mbid = release_data.get('release-group', {}).get('id')
+                    if not rg_mbid:
+                        print(f'  ✗ No release group found, skipping')
+                        continue
 
-            _process_release_group(
-                rg_mbid=rg_mbid,
-                rg_title=album.title,
-                artist_objs=list(album.artists),
-                artist_cache=artist_cache,
-                mode='reseed'
-            )
+                _process_release_group(
+                    rg_mbid=rg_mbid,
+                    rg_title=album.title,
+                    artist_objs=list(album.artists),
+                    artist_cache=artist_cache,
+                    mode='reseed',
+                    existing_album=album
+                )
+            except Exception as e:
+                db.session.rollback()
+                print(f'  ✗ Error processing "{album.title}": {e}')
 
         print('\nReseed complete.')
 
@@ -514,9 +844,8 @@ def seed_artist_albums(mode='missing', artist_names=None):
 
         for i, artist in enumerate(artists):
             print(f'\n── [{i+1}/{len(artists)}] {artist.name} ──')
-            album_rgs, ep_rgs = _get_valid_release_groups(artist.mbid)
-            all_rgs = album_rgs + ep_rgs
-            print(f'  {len(album_rgs)} albums, {len(ep_rgs)} EPs in release groups')
+            all_rgs = _get_valid_release_groups(artist.mbid)
+            print(f'  {len(all_rgs)} albums in release groups')
 
             for rg in all_rgs:
                 rg_mbid = rg.get('id')
@@ -562,15 +891,21 @@ def seed_new_artists(artist_names=None):
 
             mb_artist = mb_artists[0]
             artist_mbid = mb_artist.get('id')
+
+            # Also check by MBID — name match can fail due to special characters
+            existing_by_mbid = Artist.query.filter_by(mbid=artist_mbid).first()
+            if existing_by_mbid:
+                print(f'  Already in DB as "{existing_by_mbid.name}", skipping.')
+                continue
+
             artist_obj = Artist(mbid=artist_mbid, name=mb_artist.get('name', artist_name))
             db.session.add(artist_obj)
             db.session.flush()
             artist_cache[artist_mbid] = artist_obj
             print(f'  Created: {artist_obj.name} [{artist_mbid}]')
 
-            album_rgs, ep_rgs = _get_valid_release_groups(artist_mbid)
-            all_rgs = album_rgs + ep_rgs
-            print(f'  {len(album_rgs)} albums, {len(ep_rgs)} EPs')
+            all_rgs = _get_valid_release_groups(artist_mbid)
+            print(f'  {len(all_rgs)} albums')
 
             for rg in all_rgs:
                 rg_mbid = rg.get('id')
@@ -1124,17 +1459,38 @@ if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else 'missing-albums'
 
     mbid_flag = next((a.split('=', 1)[1] for a in sys.argv[2:] if a.startswith('--mbid=')), None)
+    artist_flag = next((a.split('=', 1)[1] for a in sys.argv[2:] if a.startswith('--artist=')), None)
 
     if mode == 'seed' and mbid_flag:
         seed_by_mbid(mbid_flag)
+    elif mode == 'seed-artist':
+        if not artist_flag:
+            print("Usage: python seeds/seed.py seed-artist --artist=<artist name>")
+            sys.exit(1)
+        with app.app_context():
+            existing = Artist.query.filter(Artist.name.ilike(artist_flag)).first()
+        if existing:
+            print(f'Artist already in DB — reseeding discography for "{existing.name}".')
+            seed_artist_albums(mode='force', artist_names=[existing.name])
+        else:
+            print(f'Artist not in DB — seeding "{artist_flag}" as new artist.')
+            seed_new_artists(artist_names=[artist_flag])
+    elif mode == 'dedupe':
+        dedupe_albums()
     elif mode == 'reseed-albums':
         reseed_existing_albums()
+    elif mode == 'reseed-old':
+        from datetime import datetime
+        reseed_existing_albums(before_date=datetime(2026, 4, 2))
     elif mode == 'force-albums':
         seed_artist_albums(mode='force')
     elif mode == 'missing-albums':
         seed_artist_albums(mode='missing')
     elif mode == 'new-artists':
         seed_new_artists()
+    elif mode == 'new-artists-albums':
+        # Seed missing albums for NEW_ARTISTS that are already in the DB but have no albums
+        seed_artist_albums(mode='missing', artist_names=NEW_ARTISTS)
     elif mode == 'covers':
         update_cover_art()
     elif mode == 'covers-force':
@@ -1153,3 +1509,4 @@ if __name__ == "__main__":
         print(f"Unknown mode: {mode}")
         print("Usage: python seeds/seed.py [reseed-albums|force-albums|missing-albums|new-artists|covers|covers-force|feat-titles|colors|colors-force|refresh [year]]")
         print("       python seeds/seed.py seed --mbid=<release-mbid>")
+        print("       python seeds/seed.py seed-artist --artist=<artist name>")

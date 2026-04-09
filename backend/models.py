@@ -158,3 +158,52 @@ class Review(db.Model):
 
     def __repr__(self):
         return f'<Review {self.rating} for Album ID {self.album_id} by User ID {self.user_id}>'
+
+
+class ReviewLike(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    review_id = db.Column(db.Integer, db.ForeignKey('review.id'), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    user = db.relationship('User', backref='review_likes')
+    review = db.relationship('Review', backref=db.backref('likes', cascade='all, delete-orphan'))
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'review_id'),
+    )
+
+    def __repr__(self):
+        return f'<ReviewLike user={self.user_id} review={self.review_id}>'
+
+
+class ReviewComment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    review_id = db.Column(db.Integer, db.ForeignKey('review.id'), nullable=False, index=True)
+    body = db.Column(db.Text, nullable=False)
+    media_url = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    user = db.relationship('User', backref='review_comments')
+    review = db.relationship('Review', backref=db.backref('comments', cascade='all, delete-orphan'))
+
+    def __repr__(self):
+        return f'<ReviewComment id={self.id} review={self.review_id} user={self.user_id}>'
+
+
+class CommentLike(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    comment_id = db.Column(db.Integer, db.ForeignKey('review_comment.id'), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    user = db.relationship('User', backref='comment_likes')
+    comment = db.relationship('ReviewComment', backref=db.backref('likes', cascade='all, delete-orphan'))
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'comment_id'),
+    )
+
+    def __repr__(self):
+        return f'<CommentLike user={self.user_id} comment={self.comment_id}>'
