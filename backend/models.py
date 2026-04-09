@@ -207,3 +207,20 @@ class CommentLike(db.Model):
 
     def __repr__(self):
         return f'<CommentLike user={self.user_id} comment={self.comment_id}>'
+
+
+class Backlog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    album_id = db.Column(db.Integer, db.ForeignKey('album.id'), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    user = db.relationship('User', backref='backlog')
+    album = db.relationship('Album', backref='backlogged_by')
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'album_id'),
+    )
+
+    def __repr__(self):
+        return f'<Backlog user={self.user_id} album={self.album_id}>'

@@ -4,6 +4,7 @@ from functools import wraps
 from models import User
 from db import db
 from tokens import create_access_token, create_refresh_token
+from limiter import limiter
 import jwt, os, re
 
 _EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
@@ -28,6 +29,7 @@ def token_required(f):
     return decorated_function
 
 @auth_bp.route('/register', methods=['POST'])
+@limiter.limit("10 per hour")
 def register():
     data = request.get_json()
 
@@ -61,6 +63,7 @@ def register():
 
 
 @auth_bp.route('/login', methods=['POST'])
+@limiter.limit("20 per hour")
 def login():
     data = request.get_json()
     username = data.get('username')
