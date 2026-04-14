@@ -703,12 +703,17 @@ def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='m
     # Enrich feat titles
     t_updated, a_linked, _, _ = _enrich_feat_titles_for_album(album, release_data=release_data)
 
+    # Extract accent color from cover
+    if cover_url and not album.color_accent:
+        album.color_accent = _extract_dominant_color(cover_url)
+
     try:
         db.session.commit()
         print(
             f'  ✓ {title} ({release_date.year}) — '
             f'{track_count} tracks added | {t_updated} titles enriched | '
-            f'{a_linked} artists linked | cover: {"✓" if cover_url else "✗"}'
+            f'{a_linked} artists linked | cover: {"✓" if cover_url else "✗"} | '
+            f'color: {album.color_accent or "✗"}'
         )
     except Exception as e:
         db.session.rollback()

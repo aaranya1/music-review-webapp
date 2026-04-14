@@ -224,3 +224,20 @@ class Backlog(db.Model):
 
     def __repr__(self):
         return f'<Backlog user={self.user_id} album={self.album_id}>'
+
+
+class Follow(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    following_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    follower = db.relationship('User', foreign_keys=[follower_id], backref='following')
+    following = db.relationship('User', foreign_keys=[following_id], backref='followers')
+
+    __table_args__ = (
+        UniqueConstraint('follower_id', 'following_id'),
+    )
+
+    def __repr__(self):
+        return f'<Follow {self.follower_id} → {self.following_id}>'
