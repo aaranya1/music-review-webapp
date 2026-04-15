@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import api from '../../api/client.js';
-import AlbumCard from '../Album/AlbumCard.jsx';
-import { ArtistDetailSkeleton } from '../Skeleton.jsx';
-import { getAvatarColor, parseHex } from '../../utils/avatar.js';
+import api from '@/api/client.js';
+import AlbumCard from '@/features/albums/components/AlbumCard.jsx';
+import { ArtistDetailSkeleton } from '@/components/ui/Skeleton.jsx';
+import { getAvatarColor, parseHex } from '@/utils/avatar.js';
 import './ArtistDetails.css';
 
 function ArtistDetails() {

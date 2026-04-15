@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import api from '../../api/client.js';
-import { useScrollRestoration } from '../../utils/useScrollRestoration.js';
-import { getAvatarColor } from '../../utils/avatar.js';
-import { ArtistCardSkeleton } from '../Skeleton.jsx';
+import api from '@/api/client.js';
+import { useScrollRestoration } from '@/utils/useScrollRestoration.js';
+import { getAvatarColor } from '@/utils/avatar.js';
+import { ArtistCardSkeleton } from '@/components/ui/Skeleton.jsx';
 import './ArtistList.css';
 
 function ArtistCard({ artist }) {

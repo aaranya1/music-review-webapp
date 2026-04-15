@@ -25,7 +25,6 @@ limits==5.8.0
 ordered-set==4.1.0
 pillow==12.1.1
 psycopg2-binary==2.9.11
-psycopg2==2.9.11
 psycopg==3.3.2
 pycparser==3.0
 python-dotenv==1.2.1

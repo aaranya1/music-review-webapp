@@ -1,23 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
-import { useAuth } from '../../context/AuthContext.jsx';
-import api from '../../api/client.js';
-import { getAvatarColor } from '../../utils/avatar.js';
+import { useAuth } from '@/context/AuthContext.jsx';
+import api from '@/api/client.js';
+import { getAvatarColor } from '@/utils/avatar.js';
+import StarRating from '@/components/ui/StarRating.jsx';
 import './UserProfile.css';
-
-function StarRating({ rating }) {
-    const fullStars = Math.floor(rating)
-    const hasHalf = rating % 1 >= 0.5
-    const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0)
-    return (
-        <span className='profile-star-rating'>
-            {'★'.repeat(fullStars)}
-            {hasHalf && '½'}
-            {'☆'.repeat(emptyStars)}
-        </span>
-    )
-}
 
 function UserProfile() {
     const { user_id } = useParams()
@@ -136,7 +124,7 @@ function UserProfile() {
                                 <div className='profile-review-card__body'>
                                     <h3 className='profile-review-card__title'>{review.album_title}</h3>
                                     <div className='profile-review-card__rating'>
-                                        <StarRating rating={review.rating} />
+                                        <StarRating rating={review.rating} className='profile-star-rating' />
                                         <span className='profile-review-card__rating-val'>
                                             {review.rating.toFixed(1)}
                                         </span>

@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext.jsx';
-import { getAvatarColor } from '../../utils/avatar.js';
+import { useAuth } from '@/context/AuthContext.jsx';
+import { getAvatarColor } from '@/utils/avatar.js';
 import LoginModal from './LoginModal.jsx';
 import RegisterModal from './RegisterModal.jsx';
-import api from '../../api/client.js';
+import api from '@/api/client.js';
 import './Navbar.css';
 
 function SearchDropdown({ results, query, onSelect }) {
@@ -148,7 +148,7 @@ function Navbar() {
 
     const handleLogout = async () => {
         await logout();
-        navigate('/login', { replace: true });
+        navigate('/', { replace: true });
     };
 
     const switchToRegister = () => { setShowLogin(false); setShowRegister(true); };

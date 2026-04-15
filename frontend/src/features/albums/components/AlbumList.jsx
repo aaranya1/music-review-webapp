@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import api from '../../api/client.js';
-import { useScrollRestoration } from '../../utils/useScrollRestoration.js';
-import AlbumCard from '../Album/AlbumCard.jsx';
-import { AlbumCardSkeleton } from '../Skeleton.jsx';
+import api from '@/api/client.js';
+import { useScrollRestoration } from '@/utils/useScrollRestoration.js';
+import AlbumCard from './AlbumCard.jsx';
+import { AlbumCardSkeleton } from '@/components/ui/Skeleton.jsx';
 import './AlbumList.css';
 
 function AlbumList() {
