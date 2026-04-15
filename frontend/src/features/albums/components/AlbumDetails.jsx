@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext.jsx';
-import api from '../../api/client.js';
-import ReviewModal from '../Review/ReviewModal.jsx';
-import ReviewList from '../Review/ReviewList.jsx';
-import { AlbumDetailSkeleton } from '../Skeleton.jsx';
-import { parseHex } from '../../utils/avatar.js';
+import { useAuth } from '@/context/AuthContext.jsx';
+import api from '@/api/client.js';
+import ReviewModal from '@/features/reviews/components/ReviewModal.jsx';
+import ReviewList from '@/features/reviews/components/ReviewList.jsx';
+import { AlbumDetailSkeleton } from '@/components/ui/Skeleton.jsx';
+import StarRating from '@/components/ui/StarRating.jsx';
+import { parseHex } from '@/utils/avatar.js';
 import './AlbumDetails.css';
 
 function formatDuration(ms) {
@@ -14,19 +15,6 @@ function formatDuration(ms) {
     const minutes = Math.floor(totalSeconds / 60)
     const seconds = totalSeconds % 60
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
-}
-
-function StarRating({ rating, max = 5 }) {
-    const fullStars = Math.floor(rating)
-    const hasHalf = rating % 1 >= 0.5
-    const emptyStars = max - fullStars - (hasHalf ? 1 : 0)
-    return (
-        <span className='star-rating'>
-            {'★'.repeat(fullStars)}
-            {hasHalf && '½'}
-            {'☆'.repeat(emptyStars)}
-        </span>
-    )
 }
 
 // ── Cover lightbox ──────────────────────────────────────────────────────────

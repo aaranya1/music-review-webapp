@@ -1,57 +1,12 @@
 import React, { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { useAuth } from '@/context/AuthContext.jsx';
 import { Link } from 'react-router-dom';
-import { getAvatarColor } from '../../utils/avatar.js';
-import api from '../../api/client.js';
+import { getAvatarColor } from '@/utils/avatar.js';
+import api from '@/api/client.js';
+import StarRating from '@/components/ui/StarRating.jsx';
+import StarPicker from '@/components/ui/StarPicker.jsx';
 import './ReviewList.css';
-
-function StarPicker({ value, onChange }) {
-    const [hovered, setHovered] = useState(null)
-
-    return (
-        <div className='star-picker'>
-            {[1, 2, 3, 4, 5].map(star => {
-                const active = hovered !== null ? hovered : value
-                const full = active >= star
-                const half = !full && active >= star - 0.5
-                return (
-                    <span
-                        key={star}
-                        className='star-picker__star'
-                        onMouseMove={(e) => {
-                            const rect = e.currentTarget.getBoundingClientRect()
-                            const isLeft = e.clientX - rect.left < rect.width / 2
-                            setHovered(isLeft ? star - 0.5 : star)
-                        }}
-                        onMouseLeave={() => setHovered(null)}
-                        onClick={(e) => {
-                            const rect = e.currentTarget.getBoundingClientRect()
-                            const isLeft = e.clientX - rect.left < rect.width / 2
-                            onChange(isLeft ? star - 0.5 : star)
-                        }}
-                    >
-                        <span className={`star-picker__fill ${full ? 'full' : half ? 'half' : 'empty'}`}>★</span>
-                    </span>
-                )
-            })}
-            {value > 0 && <span className='star-picker__value'>{value.toFixed(1)}</span>}
-        </div>
-    )
-}
-
-function StarRating({ rating }) {
-    const fullStars = Math.floor(rating)
-    const hasHalf = rating % 1 >= 0.5
-    const emptyStars = 5 - fullStars - (hasHalf ? 1 : 0)
-    return (
-        <span className='star-rating'>
-            {'★'.repeat(fullStars)}
-            {hasHalf && '½'}
-            {'☆'.repeat(emptyStars)}
-        </span>
-    )
-}
 
 function ReviewItem({ review, currentUser, onUpdated, onDeleted }) {
     const [editing, setEditing] = useState(false)

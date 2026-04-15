@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.env
+docker-compose.yml
+migrations/versions/__pycache__/
+seeds/__pycache__/

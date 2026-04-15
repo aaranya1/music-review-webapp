@@ -1,0 +1,145 @@
+/* ── Home / Landing Page ────────────────────────────────────────────────────── */
+
+.home-root {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 6rem;
+}
+
+/* ── Hero ── */
+.home-hero {
+    text-align: center;
+    padding: 5rem 0 4rem;
+}
+
+.home-hero__title {
+    font-family: var(--font-heading);
+    font-size: 3.2rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: #ddd9d1;
+    margin: 0 0 1.2rem;
+}
+
+.home-hero__sub {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: #8a857f;
+    max-width: 460px;
+    margin: 0 auto 2rem;
+    line-height: 1.6;
+}
+
+.home-hero__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.home-hero__cta {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.7rem 2rem;
+    border-radius: 6px;
+    background: #c8a96e;
+    color: #0e0c0a;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.home-hero__cta:hover {
+    background: #d4b97e;
+}
+
+/* ── Recent Reviews ── */
+.home-recent {
+    margin-top: 2rem;
+}
+
+.home-recent__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.home-recent__line {
+    flex: 1;
+    height: 1px;
+    background: #2a2724;
+}
+
+.home-recent__label {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    color: #706c68;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.home-recent__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.home-review-card {
+    background: #171412;
+    border: 1px solid #2a2724;
+    border-radius: 8px;
+    padding: 1.1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.home-review-card__top {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.home-review-card__album {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ddd9d1;
+}
+
+.home-review-card__artist {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: #706c68;
+}
+
+.home-review-card__bottom {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.home-review-card__stars {
+    color: #c8a96e;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.home-review-card__user {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: #5a5652;
+}
+
+.home-review-card__comment {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: #8a857f;
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
