@@ -1,5 +1,5 @@
 SHELL := bash
-.PHONY: dev db backend frontend stop setup docker docker-down seed
+.PHONY: dev db backend frontend stop setup docker docker-down seed clean
 
 # ── Local Development (3 services, one command) ──────────────────────────────
 
@@ -46,3 +46,32 @@ docker-down:
 seed:
 	docker compose exec -T db psql -U jukeboxed jukeboxed < backup.sql
 	@echo "Database restored from backup.sql"
+
+# ── Clean ────────────────────────────────────────────────────────────────────
+
+clean:
+	$(MAKE) clean-$(if $(filter Windows_NT,$(OS)),windows,unix)
+
+clean-windows:
+	-taskkill /FI "WINDOWTITLE eq *flask*" /F >NUL 2>&1
+	-taskkill /FI "WINDOWTITLE eq *vite*" /F >NUL 2>&1
+	-cd backend && docker compose down
+	-if exist backend\venv rmdir /S /Q backend\venv
+	-if exist frontend\node_modules rmdir /S /Q frontend\node_modules
+	-if exist frontend\dist rmdir /S /Q frontend\dist
+	-if exist backend\.pytest_cache rmdir /S /Q backend\.pytest_cache
+	-if exist backend\__pycache__ rmdir /S /Q backend\__pycache__
+	-docker system prune -a -f
+	@echo "Cleanup complete!"
+
+clean-unix:
+	pkill -f "flask run" || true
+	pkill -f "vite" || true
+	cd backend && docker compose down
+	rm -rf backend/venv
+	rm -rf frontend/node_modules
+	rm -rf frontend/dist
+	rm -rf backend/.pytest_cache
+	rm -rf backend/__pycache__
+	docker system prune -a -f
+	@echo "Cleanup complete!"
