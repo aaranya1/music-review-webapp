@@ -1,32 +1,11 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, g
 from models import Review, Follow, ReviewLike
 from sqlalchemy import func
 from sqlalchemy.orm import selectinload
 from routes.auth import token_required
-from flask import g
+from serializers import serialize_review
 
 home_bp = Blueprint('home', __name__)
-
-
-def _serialize_review(review):
-    album = review.album
-    return {
-        "id": review.id,
-        "user_id": review.user_id,
-        "username": review.user.username,
-        "rating": review.rating,
-        "review_text": review.review_text or None,
-        "created_at": review.created_at,
-        "updated_at": review.updated_at or None,
-        "like_count": len(review.likes),
-        "album": {
-            "mbid": album.mbid,
-            "title": album.title,
-            "cover_url": album.cover_url,
-            "release_year": album.release_date.year if album.release_date else None,
-            "artists": [{"mbid": a.mbid, "name": a.name} for a in album.artists],
-        }
-    }
 
 
 @home_bp.route('/')
@@ -40,7 +19,7 @@ def home():
     )
 
     return {
-        "latest_reviews": [_serialize_review(r) for r in latest_reviews]
+        "latest_reviews": [serialize_review(r) for r in latest_reviews]
     }
 
 
@@ -66,7 +45,7 @@ def feed():
     )
 
     return {
-        "reviews": [_serialize_review(r) for r in pagination.items],
+        "reviews": [serialize_review(r) for r in pagination.items],
         "page": pagination.page,
         "total_pages": pagination.pages,
         "total": pagination.total,
@@ -92,7 +71,7 @@ def feed_popular():
     )
 
     return {
-        "reviews": [_serialize_review(r) for r in pagination.items],
+        "reviews": [serialize_review(r) for r in pagination.items],
         "page": pagination.page,
         "total_pages": pagination.pages,
         "total": pagination.total,

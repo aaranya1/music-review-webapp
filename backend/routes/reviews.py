@@ -1,9 +1,9 @@
-from flask import Blueprint
+from flask import Blueprint, request, g
 from models import Review, ReviewLike, ReviewComment, CommentLike
 from db import db
 from routes.auth import token_required
-from flask import request, g
 from sqlalchemy.orm import selectinload
+from serializers import serialize_review
 
 reviews_bp = Blueprint('reviews', __name__)
 
@@ -12,27 +12,19 @@ def get_reviews():
     page = request.args.get('page', 1, type=int)
     per_page = min(request.args.get('per_page', 20, type=int), 50)
 
-    pagination = Review.query.options(selectinload(Review.album)) \
-        .order_by(Review.created_at.desc(), Review.id.desc()) \
+    pagination = (
+        Review.query
+        .options(selectinload(Review.album), selectinload(Review.likes))
+        .order_by(Review.created_at.desc(), Review.id.desc())
         .paginate(page=page, per_page=per_page, error_out=False)
-    
-    output = []
-    for review in pagination.items:
-        output.append({
-            'id': review.id,
-            'user_id': review.user_id,
-            'album_id': review.album_id,
-            'rating': review.rating,
-            'review_text': review.review_text or None,
-            'created_at': review.created_at,
-            'updated_at': review.updated_at or None
-        })
+    )
 
-    return {"reviews": output,
-            "page": pagination.page,
-            "total_pages": pagination.pages,
-            "total": pagination.total
-            }
+    return {
+        "reviews": [serialize_review(r) for r in pagination.items],
+        "page": pagination.page,
+        "total_pages": pagination.pages,
+        "total": pagination.total,
+    }
 
 @reviews_bp.route('/reviews/<int:review_id>', methods=['PUT'])
 @token_required
