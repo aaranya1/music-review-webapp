@@ -37,6 +37,22 @@ limiter.init_app(app)
 def ratelimit_handler(_e):
     return jsonify({"message": "Too many requests, please slow down."}), 429
 
+
+@app.route('/health')
+@limiter.exempt
+def health():
+    return {"status": "ok"}
+
+
+@app.route('/health/ready')
+@limiter.exempt
+def health_ready():
+    try:
+        db.session.execute(db.text('SELECT 1'))
+        return {"status": "ready"}
+    except Exception:
+        return {"status": "db_unavailable"}, 503
+
 app.register_blueprint(search_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(albums_bp)
