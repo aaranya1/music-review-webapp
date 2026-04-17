@@ -241,3 +241,46 @@ class Follow(db.Model):
 
     def __repr__(self):
         return f'<Follow {self.follower_id} → {self.following_id}>'
+
+
+class List(db.Model):
+    __tablename__ = 'list'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    is_public = db.Column(db.Boolean, nullable=False, default=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime, nullable=True)
+
+    user = db.relationship('User', backref='lists')
+    items = db.relationship(
+        'ListItem',
+        back_populates='list',
+        cascade='all, delete-orphan',
+        order_by='ListItem.position'
+    )
+
+    def __repr__(self):
+        return f'<List {self.id} "{self.title}" by user {self.user_id}>'
+
+
+class ListItem(db.Model):
+    __tablename__ = 'list_item'
+
+    id = db.Column(db.Integer, primary_key=True)
+    list_id = db.Column(db.Integer, db.ForeignKey('list.id'), nullable=False, index=True)
+    album_id = db.Column(db.Integer, db.ForeignKey('album.id'), nullable=False, index=True)
+    position = db.Column(db.Integer, nullable=False, default=0)
+    note = db.Column(db.Text, nullable=True)
+
+    list = db.relationship('List', back_populates='items')
+    album = db.relationship('Album', backref='list_items')
+
+    __table_args__ = (
+        UniqueConstraint('list_id', 'album_id'),
+    )
+
+    def __repr__(self):
+        return f'<ListItem list={self.list_id} album={self.album_id} pos={self.position}>'

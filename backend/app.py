@@ -13,6 +13,7 @@ from routes.auth import auth_bp
 from routes.home import home_bp
 from routes.backlog import backlog_bp
 from routes.follows import follows_bp
+from routes.lists import lists_bp
 
 load_dotenv()
 
@@ -44,3 +45,4 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(home_bp)
 app.register_blueprint(backlog_bp)
 app.register_blueprint(follows_bp)
+app.register_blueprint(lists_bp)
