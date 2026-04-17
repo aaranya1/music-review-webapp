@@ -2,6 +2,7 @@ from flask import Blueprint, g
 from models import User, Follow
 from db import db
 from routes.auth import token_required
+from notifications_service import create_notification
 
 follows_bp = Blueprint('follows', __name__)
 
@@ -17,6 +18,13 @@ def follow_user(user_id):
         return {"message": "Already following"}, 409
     follow = Follow(follower_id=g.user_id, following_id=user_id)
     db.session.add(follow)
+    create_notification(
+        user_id=user_id,
+        actor_id=g.user_id,
+        type_='new_follower',
+        target_type='user',
+        target_id=g.user_id,
+    )
     db.session.commit()
     return {"message": "Followed"}, 201
 

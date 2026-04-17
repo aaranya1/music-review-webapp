@@ -284,3 +284,27 @@ class ListItem(db.Model):
 
     def __repr__(self):
         return f'<ListItem list={self.list_id} album={self.album_id} pos={self.position}>'
+
+
+class Notification(db.Model):
+    __tablename__ = 'notification'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    actor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    type = db.Column(db.String(32), nullable=False)
+    target_type = db.Column(db.String(32), nullable=True)
+    target_id = db.Column(db.Integer, nullable=True)
+    read = db.Column(db.Boolean, nullable=False, default=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+
+    user = db.relationship('User', foreign_keys=[user_id], backref='notifications')
+    actor = db.relationship('User', foreign_keys=[actor_id])
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'actor_id', 'type', 'target_type', 'target_id',
+                         name='uq_notification_dedupe'),
+    )
+
+    def __repr__(self):
+        return f'<Notification {self.type} to={self.user_id} from={self.actor_id}>'

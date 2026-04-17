@@ -4,6 +4,7 @@ from db import db
 from routes.auth import token_required
 from sqlalchemy.orm import selectinload
 from serializers import serialize_review
+from notifications_service import create_notification
 
 reviews_bp = Blueprint('reviews', __name__)
 
@@ -63,7 +64,7 @@ def delete_review(review_id):
 @reviews_bp.route('/reviews/<int:review_id>/like', methods=['POST'])
 @token_required
 def toggle_review_like(review_id):
-    Review.query.get_or_404(review_id)
+    review = Review.query.get_or_404(review_id)
     existing = ReviewLike.query.filter_by(user_id=g.user_id, review_id=review_id).first()
     if existing:
         db.session.delete(existing)
@@ -71,6 +72,13 @@ def toggle_review_like(review_id):
         return {"liked": False}
     like = ReviewLike(user_id=g.user_id, review_id=review_id)
     db.session.add(like)
+    create_notification(
+        user_id=review.user_id,
+        actor_id=g.user_id,
+        type_='review_like',
+        target_type='review',
+        target_id=review.id,
+    )
     db.session.commit()
     return {"liked": True}, 201
 
@@ -105,7 +113,7 @@ def get_review_comments(review_id):
 @reviews_bp.route('/reviews/<int:review_id>/comments', methods=['POST'])
 @token_required
 def create_review_comment(review_id):
-    Review.query.get_or_404(review_id)
+    review = Review.query.get_or_404(review_id)
     data = request.get_json()
     body = data.get('body', '').strip()
     if not body:
@@ -117,6 +125,14 @@ def create_review_comment(review_id):
         media_url=data.get('media_url')
     )
     db.session.add(comment)
+    db.session.flush()
+    create_notification(
+        user_id=review.user_id,
+        actor_id=g.user_id,
+        type_='new_comment',
+        target_type='comment',
+        target_id=comment.id,
+    )
     db.session.commit()
     return {"message": "Comment created", "id": comment.id}, 201
 
@@ -137,7 +153,7 @@ def delete_review_comment(review_id, comment_id):
 @reviews_bp.route('/reviews/<int:review_id>/comments/<int:comment_id>/like', methods=['POST'])
 @token_required
 def toggle_comment_like(review_id, comment_id):
-    ReviewComment.query.filter_by(id=comment_id, review_id=review_id).first_or_404()
+    comment = ReviewComment.query.filter_by(id=comment_id, review_id=review_id).first_or_404()
     existing = CommentLike.query.filter_by(user_id=g.user_id, comment_id=comment_id).first()
     if existing:
         db.session.delete(existing)
@@ -145,5 +161,12 @@ def toggle_comment_like(review_id, comment_id):
         return {"liked": False}
     like = CommentLike(user_id=g.user_id, comment_id=comment_id)
     db.session.add(like)
+    create_notification(
+        user_id=comment.user_id,
+        actor_id=g.user_id,
+        type_='comment_like',
+        target_type='comment',
+        target_id=comment.id,
+    )
     db.session.commit()
     return {"liked": True}, 201
