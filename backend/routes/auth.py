@@ -4,12 +4,10 @@ from functools import wraps
 from models import User
 from db import db
 from tokens import create_access_token, create_refresh_token
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from extensions import limiter
 import jwt, os, re
 
 _EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
-limiter = Limiter(get_remote_address, default_limits=["200 per minute"], headers_enabled=True)
 
 auth_bp = Blueprint('auth', __name__)
 

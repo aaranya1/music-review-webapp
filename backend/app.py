@@ -3,8 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify
 from flask_cors import CORS
 from db import db, migrate
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from extensions import limiter
 from routes.search import search_bp
 from routes.users import users_bp
 from routes.albums import albums_bp
@@ -29,8 +28,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 migrate.init_app(app, db)
-
-limiter = Limiter(get_remote_address, default_limits=["200 per minute"], headers_enabled=True)
 
 limiter.init_app(app)
 
