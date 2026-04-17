@@ -1241,12 +1241,11 @@ def seed_by_mbid(release_mbid):
             release_data.get('first-release-date') or
             release_data.get('release-group', {}).get('first-release-date', '')
         )
-        try:
-            year = int(raw_date[:4]) if raw_date and len(raw_date) >= 4 else normalized['release_date']
-        except (ValueError, TypeError):
-            year = normalized['release_date']
+        release_date = _parse_date(raw_date)
+        if not release_date and normalized['release_date']:
+            release_date = date(normalized['release_date'], 1, 1)
 
-        print(f'Release: {title} ({year})')
+        print(f'Release: {title} ({release_date})')
         print(f'Artists: {", ".join(a["name"] for a in artists_data)}')
 
         # Try to find existing album — first by current MBID, then by title+primary artist
@@ -1268,13 +1267,13 @@ def seed_by_mbid(release_mbid):
             if album.title != title:
                 print(f'  Title: "{album.title}" → "{title}"')
                 album.title = title
-            if year:
-                if album.release_year != year:
-                    print(f'  Year: {album.release_year} → {year}')
-                album.release_year = year
+            if release_date:
+                if album.release_date != release_date:
+                    print(f'  Date: {album.release_date} → {release_date}')
+                album.release_date = release_date
         else:
             print('No existing album found — creating new entry.')
-            album = Album(mbid=release_mbid, title=title, release_year=year)
+            album = Album(mbid=release_mbid, title=title, release_date=release_date)
             db.session.add(album)
 
         # Cover art
@@ -1369,8 +1368,8 @@ def refresh_recent_tracks(since_year=2025):
     with app.app_context():
         albums = (
             Album.query
-            .filter(Album.release_year >= since_year)
-            .order_by(Album.release_year.desc(), Album.title)
+            .filter(Album.release_date >= date(since_year, 1, 1))
+            .order_by(Album.release_date.desc(), Album.title)
             .all()
         )
         print(f'Refreshing tracks for {len(albums)} albums from {since_year}+\n')
@@ -1380,7 +1379,7 @@ def refresh_recent_tracks(since_year=2025):
 
         for i, album in enumerate(albums):
             artist_name = album.artists[0].name if album.artists else ''
-            print(f'[{i + 1}/{len(albums)}] {album.title} — {artist_name} ({album.release_year})')
+            print(f'[{i + 1}/{len(albums)}] {album.title} — {artist_name} ({album.release_date})')
 
             release_data = search_mb_rels('release', album.mbid, inc='recordings')
             if not release_data:

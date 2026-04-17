@@ -34,7 +34,7 @@ def search():
         'albums': [{
             'mbid': a.mbid,
             'title': a.title,
-            'release_year': a.release_year,
+            'release_year': a.release_date.year if a.release_date else None,
             'cover_url': a.cover_url,
             'artists': [{'mbid': ar.mbid, 'name': ar.name} for ar in a.artists]
         } for a in albums],
