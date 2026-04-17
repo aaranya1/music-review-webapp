@@ -23,6 +23,12 @@ def get_user(user_id):
     review_count = Review.query.filter_by(user_id=user.id).count()
     return {"id": user.id, "username": user.username, "review_count": review_count}
 
+@users_bp.route('/users/<username>')
+def get_profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    review_count = Review.query.filter_by(user_id=user.id).count()
+    return {"id": user.id, "username": user.username, "review_count": review_count}
+
 @users_bp.route('/users/<int:user_id>/reviews')
 def get_user_reviews(user_id):
     user = User.query.get_or_404(user_id)

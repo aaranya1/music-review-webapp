@@ -137,5 +137,8 @@ def logout():
 def get_current_user():
     user_id = g.user_id
     user = User.query.get_or_404(user_id)
-    return {"id": user.id, "username": user.username}
+    return {"id": user.id, 
+            "username": user.username,
+            "email": user.email,
+            "created_at": user.created_at}
 
