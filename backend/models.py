@@ -73,6 +73,7 @@ class Album(db.Model):
     cover_url = db.Column(db.Text, nullable=True)
     color_accent = db.Column(db.String(7), nullable=True)  # e.g. '#c84b38'
     discogs_id = db.Column(db.Integer, nullable=True, unique=True, index=True)
+    pinned_release_mbid = db.Column(db.String(36), nullable=True)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     artists = db.relationship(
@@ -88,12 +89,16 @@ class Album(db.Model):
 
 class Track(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    mbid = db.Column(db.String(36), nullable=True, unique=True, index=True)
+    mbid = db.Column(db.String(36), nullable=True, index=True)
     title = db.Column(db.Text, nullable=False)
     duration_ms = db.Column(db.Integer, nullable=True)
     track_number = db.Column(db.Integer, nullable=False)
     disc_number = db.Column(db.Integer, nullable=False, default=1)
     album_id = db.Column(db.Integer, db.ForeignKey('album.id'), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('album_id', 'mbid', name='uq_track_album_mbid'),
+    )
 
     album = db.relationship(
         'Album',

@@ -463,9 +463,36 @@ def _total_tracks(release):
     )
 
 
-def _pick_best_release(releases):
+_EDITION_RE = re.compile(
+    r'\(\s*(deluxe|expanded|extended|bonus|explicit|clean|japanese|korean|'
+    r'special|limited|remaster(ed)?|anniversary|edition|version|track|disc|reissue)\b[^)]*\)',
+    re.IGNORECASE,
+)
+_BUNDLE_MARKERS = {
+    'and', '&', '+', 'ii', 'iii', 'iv', 'v',
+    'vol', 'volume', 'complete', 'collection', 'anthology', 'discography',
+    'box', 'set', 'bundle',
+}
+
+
+def _is_bundle_title(release_title, rg_title):
+    """True if release_title looks like a bundle/compilation that doesn't match the RG."""
+    if not release_title or not rg_title:
+        return False
+    rt = _EDITION_RE.sub('', release_title).strip().lower()
+    gt = _EDITION_RE.sub('', rg_title).strip().lower()
+    if rt == gt:
+        return False
+    rt_words = set(re.sub(r'[^\w\s]', ' ', rt).split())
+    gt_words = set(re.sub(r'[^\w\s]', ' ', gt).split())
+    extra = rt_words - gt_words
+    return bool(extra & _BUNDLE_MARKERS)
+
+
+def _pick_best_release(releases, rg_mbid=None, rg_title=None):
     """
     Apply the release selection algorithm:
+    0. Verify release belongs to expected release group; reject bundle-like titles
     1. Filter to Digital Media format; fall back to CD, then any format
     2. Filter out releases with no country code
     3. Most frequent release date; earliest on tie
@@ -476,6 +503,19 @@ def _pick_best_release(releases):
     """
     if not releases:
         return None
+
+    # Step 0: verify RG membership and filter bundle titles
+    if rg_mbid:
+        scoped = [
+            r for r in releases
+            if not r.get('release-group') or r.get('release-group', {}).get('id') == rg_mbid
+        ]
+        if scoped:
+            releases = scoped
+    if rg_title:
+        non_bundle = [r for r in releases if not _is_bundle_title(r.get('title', ''), rg_title)]
+        if non_bundle:
+            releases = non_bundle
 
     # Step 1: Format filter with fallback chain
     candidates = None
@@ -561,7 +601,7 @@ def _seed_tracks(album, release_data):
             recording = track.get('recording', {})
             mbid = recording.get('id')
             title = track.get('title') or recording.get('title')
-            if mbid and Track.query.filter_by(mbid=mbid).first():
+            if mbid and Track.query.filter_by(album_id=album.id, mbid=mbid).first():
                 continue
             db.session.add(Track(
                 mbid=mbid,
@@ -592,16 +632,26 @@ def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='m
         print(f'  Already seeded: {existing.title}, skipping.')
         return
 
-    # Fetch all official releases in this release group
-    releases = browse_releases(rg_mbid)
-    if not releases:
-        print(f'  No releases found for "{rg_title}", skipping.')
-        return
+    # If this album is pinned to a specific release, bypass the picker
+    pinned_mbid = existing.pinned_release_mbid if existing else None
+    if pinned_mbid:
+        pinned_data = search_mb_rels('release', pinned_mbid, inc='release-groups')
+        if not pinned_data:
+            print(f'  ✗ Pinned release {pinned_mbid} not found on MB, skipping.')
+            return
+        best = pinned_data
+        print(f'  ⚲ Using pinned release {pinned_mbid}')
+    else:
+        # Fetch all official releases in this release group
+        releases = browse_releases(rg_mbid)
+        if not releases:
+            print(f'  No releases found for "{rg_title}", skipping.')
+            return
 
-    best = _pick_best_release(releases)
-    if not best:
-        print(f'  Could not pick best release for "{rg_title}", skipping.')
-        return
+        best = _pick_best_release(releases, rg_mbid=rg_mbid, rg_title=rg_title)
+        if not best:
+            print(f'  Could not pick best release for "{rg_title}", skipping.')
+            return
 
     release_mbid = best.get('id')
     title = best.get('title', rg_title)
@@ -634,7 +684,7 @@ def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='m
         old_mbid = album.mbid
         mbid_unchanged = (old_mbid == release_mbid)
 
-        if mbid_unchanged and mode == 'reseed':
+        if mbid_unchanged and mode == 'reseed' and not pinned_mbid:
             # Same release — just refresh feat titles and artist linking, skip full reseed
             t_updated, a_linked, _, _ = _enrich_feat_titles_for_album(album, release_data=release_data)
             try:
@@ -1276,6 +1326,9 @@ def seed_by_mbid(release_mbid):
             album = Album(mbid=release_mbid, title=title, release_date=release_date)
             db.session.add(album)
 
+        album.pinned_release_mbid = release_mbid
+        print(f'  ⚲ Pinned to release {release_mbid}')
+
         # Cover art
         cover_url, _ = get_cover_url(release_data.get('release-group', {}).get('id', ''))
         if cover_url:
@@ -1334,7 +1387,7 @@ def seed_by_mbid(release_mbid):
                             db_track.mbid = mbid
                         updated += 1
                 else:
-                    if mbid and Track.query.filter_by(mbid=mbid).first():
+                    if mbid and Track.query.filter_by(album_id=album.id, mbid=mbid).first():
                         continue
                     db.session.add(Track(
                         mbid=mbid,
@@ -1425,8 +1478,7 @@ def refresh_recent_tracks(since_year=2025):
                                 db_track.mbid = mbid
                             updated += 1
                     else:
-                        # New track — check globally to avoid unique constraint on mbid
-                        if mbid and Track.query.filter_by(mbid=mbid).first():
+                        if mbid and Track.query.filter_by(album_id=album.id, mbid=mbid).first():
                             continue
                         db.session.add(Track(
                             mbid=mbid,
