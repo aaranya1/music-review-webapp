@@ -11,7 +11,7 @@ import re
 import colorsys
 from io import BytesIO
 from PIL import Image
-from datetime import date
+from datetime import date, datetime, timedelta
 from collections import Counter
 
 HEADERS = {
@@ -655,7 +655,13 @@ def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='m
 
     release_mbid = best.get('id')
     title = best.get('title', rg_title)
-    release_date = _parse_date(best.get('date') or best.get('first-release-date', ''))
+    # Album = release group, so use the group's original release date. The picked
+    # release's own date is often a later reissue (e.g. a 2007 digital Kid A).
+    release_date = _parse_date(
+        best.get('release-group', {}).get('first-release-date')
+        or best.get('date')
+        or best.get('first-release-date', '')
+    )
 
     if not release_mbid:
         print(f'  No MBID on best release for "{rg_title}", skipping.')
@@ -729,12 +735,17 @@ def _process_release_group(rg_mbid, rg_title, artist_objs, artist_cache, mode='m
         new_ids = {a.id for a in artist_objs if a.id}
         current_ids = {a.id for a in album.artists if a.id}
         if new_ids != current_ids:
-            # Clear via raw delete to avoid stale association row counts
-            db.session.execute(
-                album_artist.delete().where(album_artist.c.album_id == album.id)
-            )
-            db.session.flush()
+            if album.id is not None:
+                # Clear rows directly, then expire the ORM's cached collection.
+                # Reading album.artists above loaded it into the session; without
+                # expiring, the assignment below would diff against that stale copy
+                # and re-delete rows this statement already removed (StaleDataError).
+                db.session.execute(
+                    album_artist.delete().where(album_artist.c.album_id == album.id)
+                )
+                db.session.expire(album, ['artists'])
             album.artists = artist_objs
+            db.session.flush()
     else:
         # Pull from release artist-credit if no explicit artist_objs passed
         for credit in best.get('artist-credit', []):
@@ -880,24 +891,40 @@ def reseed_existing_albums(before_date=None):
         print('\nReseed complete.')
 
 
-def seed_artist_albums(mode='missing', artist_names=None):
+def seed_artist_albums(mode='missing', artist_names=None, skip_seeded_since=None, artist_mbids=None):
     """
     Seed albums for artists already in the DB.
 
-    mode='missing' — only release groups not yet in DB
-    mode='force'   — process all release groups, update existing
-    artist_names   — optional list to restrict to specific artists by name
+    mode='missing'     — only release groups not yet in DB
+    mode='force'       — process all release groups, update existing
+    artist_names       — optional list to restrict to specific artists by name
+    artist_mbids       — optional list to restrict to specific artists by MBID
+                         (preferred over names, which can collide)
+    skip_seeded_since  — optional datetime; skip artists whose last_seeded_at is
+                         at or after this point. Used to resume an interrupted run
+                         without re-paying the MB cost of re-listing release groups.
     """
     with app.app_context():
         query = Artist.query.order_by(Artist.name)
         if artist_names:
             query = query.filter(Artist.name.in_(artist_names))
+        if artist_mbids:
+            query = query.filter(Artist.mbid.in_(artist_mbids))
         artists = query.all()
 
-        print(f'Processing {len(artists)} artists [{mode}]...\n')
+        print(f'Processing {len(artists)} artists [{mode}]...')
+        if skip_seeded_since:
+            print(f'Skipping artists seeded on/after {skip_seeded_since}')
+        print()
         artist_cache = {a.mbid: a for a in artists}
 
+        skipped = 0
         for i, artist in enumerate(artists):
+            if (skip_seeded_since and artist.last_seeded_at
+                    and artist.last_seeded_at >= skip_seeded_since):
+                skipped += 1
+                continue
+
             print(f'\n── [{i+1}/{len(artists)}] {artist.name} ──')
             all_rgs = _get_valid_release_groups(artist.mbid)
             print(f'  {len(all_rgs)} albums in release groups')
@@ -906,14 +933,25 @@ def seed_artist_albums(mode='missing', artist_names=None):
                 rg_mbid = rg.get('id')
                 rg_title = rg.get('title', '')
                 print(f'  → {rg_title}')
-                _process_release_group(
-                    rg_mbid=rg_mbid,
-                    rg_title=rg_title,
-                    artist_objs=[artist],
-                    artist_cache=artist_cache,
-                    mode=mode
-                )
+                try:
+                    _process_release_group(
+                        rg_mbid=rg_mbid,
+                        rg_title=rg_title,
+                        artist_objs=[artist],
+                        artist_cache=artist_cache,
+                        mode=mode
+                    )
+                except Exception as e:
+                    db.session.rollback()
+                    print(f'  ✗ Error processing "{rg_title}": {e}')
 
+            # Stamp only after every release group for this artist was attempted,
+            # so a crash mid-artist leaves them eligible for the next run.
+            artist.last_seeded_at = db.func.current_timestamp()
+            db.session.commit()
+
+        if skipped:
+            print(f'\nSkipped {skipped} artist(s) seeded on/after {skip_seeded_since}.')
         print('\nDone.')
 
 
@@ -1516,6 +1554,14 @@ if __name__ == "__main__":
 
     mbid_flag = next((a.split('=', 1)[1] for a in sys.argv[2:] if a.startswith('--mbid=')), None)
     artist_flag = next((a.split('=', 1)[1] for a in sys.argv[2:] if a.startswith('--artist=')), None)
+    since_flag = next((a.split('=', 1)[1] for a in sys.argv[2:] if a.startswith('--skip-seeded-since=')), None)
+
+    # --resume is shorthand for "skip artists already seeded since the start of yesterday"
+    skip_seeded_since = None
+    if since_flag:
+        skip_seeded_since = datetime.strptime(since_flag, '%Y-%m-%d')
+    elif '--resume' in sys.argv:
+        skip_seeded_since = datetime.combine(date.today() - timedelta(days=1), datetime.min.time())
 
     if mode == 'seed' and mbid_flag:
         seed_by_mbid(mbid_flag)
@@ -1539,9 +1585,9 @@ if __name__ == "__main__":
         from datetime import datetime
         reseed_existing_albums(before_date=datetime(2026, 4, 2))
     elif mode == 'force-albums':
-        seed_artist_albums(mode='force')
+        seed_artist_albums(mode='force', skip_seeded_since=skip_seeded_since)
     elif mode == 'missing-albums':
-        seed_artist_albums(mode='missing')
+        seed_artist_albums(mode='missing', skip_seeded_since=skip_seeded_since)
     elif mode == 'new-artists':
         seed_new_artists()
     elif mode == 'new-artists-albums':

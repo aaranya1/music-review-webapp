@@ -42,82 +42,151 @@ def _resolve_mb_role(rel):
     return [role]
 
 
-def seed_mb():
-    """Seed credits from MusicBrainz for tracks that have none."""
-    with app.app_context():
-        tracks = (
-            Track.query
-            .filter(Track.mbid.isnot(None))
-            .filter(~Track.credits.any())
-            .order_by(Track.id)
-            .all()
-        )
+MB_INC = (
+    'recordings+artist-credits+artist-rels+'
+    'recording-level-rels+work-rels+work-level-rels'
+)
 
-        print(f"Found {len(tracks)} tracks without credits.")
+
+def _add_mb_credit(track, artist_data, role, seen):
+    """Insert a Credit row if it doesn't already exist for (track, name, role).
+    `seen` is a set of (track_id, name, role) tuples already handled this pass."""
+    if not artist_data:
+        return 0
+    credited_name = artist_data.get('name')
+    credited_mbid = artist_data.get('id')
+    if not credited_name:
+        return 0
+
+    key = (track.id, credited_name, role)
+    if key in seen:
+        return 0
+    seen.add(key)
+
+    with db.session.no_autoflush:
+        exists = Credit.query.filter_by(
+            track_id=track.id,
+            artist_name=credited_name,
+            role=role,
+        ).first()
+        if exists:
+            return 0
+
+        artist_obj = Artist.query.filter_by(mbid=credited_mbid).first() if credited_mbid else None
+        db.session.add(Credit(
+            track_id=track.id,
+            artist_id=artist_obj.id if artist_obj else None,
+            artist_name=credited_name,
+            role=role,
+        ))
+        return 1
+
+
+def _process_recording_relations(track, relations, seen):
+    """Walk a recording's relations. Handles both artist rels and work→artist rels."""
+    added = 0
+    for rel in relations:
+        target_type = rel.get('target-type')
+
+        if target_type == 'artist':
+            # Recording-level artist credits: producer, mixer, engineer, etc.
+            roles = _resolve_mb_role(rel)
+            for role in roles:
+                added += _add_mb_credit(track, rel.get('artist'), role, seen)
+
+        elif target_type == 'work' and rel.get('type') == 'performance':
+            # Drill into the work for composer / lyricist / arranger
+            work = rel.get('work') or {}
+            for wrel in work.get('relations', []):
+                if wrel.get('target-type') != 'artist':
+                    continue
+                roles = _resolve_mb_role(wrel)
+                for role in roles:
+                    added += _add_mb_credit(track, wrel.get('artist'), role, seen)
+    return added
+
+
+def seed_mb(album_id=None):
+    """
+    Seed credits from MusicBrainz at the album level.
+    One API request per album fetches all tracks' relations at once
+    (recording-level + work-level).
+
+    If album_id is provided, only that album is processed (ignores the
+    "missing credits" filter — always re-fetches).
+    """
+    with app.app_context():
+        if album_id:
+            album = Album.query.get(album_id)
+            if not album:
+                print(f"No album with id={album_id}")
+                return
+            if not album.mbid:
+                print(f"Album {album_id} has no mbid.")
+                return
+            albums = [album]
+        else:
+            albums = (
+                Album.query
+                .filter(Album.mbid.isnot(None))
+                .filter(Album.tracks.any(
+                    Track.mbid.isnot(None) & ~Track.credits.any()
+                ))
+                .order_by(Album.id)
+                .all()
+            )
+
+        print(f"Found {len(albums)} albums with tracks missing credits.\n")
 
         total_added = 0
+        total_albums_done = 0
         total_skipped = 0
 
-        for i, track in enumerate(tracks):
-            print(f"[{i+1}/{len(tracks)}] {track.title} [{track.mbid}]")
+        for i, album in enumerate(albums):
+            artist_name = album.artists[0].name if album.artists else '?'
+            print(f"[{i+1}/{len(albums)}] {album.title} — {artist_name}")
 
-            data = search_mb_rels('recording', track.mbid, inc='artist-rels')
+            data = search_mb_rels('release', album.mbid, inc=MB_INC)
             if not data:
-                print(f"  No data returned, skipping.")
+                print("  ✗ No MB data, skipping.")
                 total_skipped += 1
                 continue
 
-            relations = data.get('relations', [])
-            if not relations:
-                print(f"  No relations found.")
-                total_skipped += 1
-                continue
+            # Build lookup maps from DB tracks
+            by_mbid = {t.mbid: t for t in album.tracks if t.mbid}
+            by_pos = {(t.disc_number, t.track_number): t for t in album.tracks}
 
-            count = 0
-            for rel in relations:
-                roles = _resolve_mb_role(rel)
-                if not roles:
-                    continue
+            album_added = 0
+            seen = set()
+            for disc in data.get('media', []):
+                disc_number = disc.get('position', 1)
+                for entry in disc.get('tracks', []):
+                    recording = entry.get('recording') or {}
+                    rec_mbid = recording.get('id')
+                    pos_key = (disc_number, entry.get('position'))
 
-                artist_data = rel.get('artist')
-                if not artist_data:
-                    continue
+                    db_track = by_mbid.get(rec_mbid) or by_pos.get(pos_key)
+                    if not db_track:
+                        continue
 
-                credited_name = artist_data.get('name')
-                credited_mbid = artist_data.get('id')
-                if not credited_name:
-                    continue
+                    relations = recording.get('relations', [])
+                    if not relations:
+                        continue
 
-                with db.session.no_autoflush:
-                    artist_obj = Artist.query.filter_by(mbid=credited_mbid).first() if credited_mbid else None
-
-                    for role in roles:
-                        exists = Credit.query.filter_by(
-                            track_id=track.id,
-                            artist_name=credited_name,
-                            role=role
-                        ).first()
-                        if exists:
-                            continue
-
-                        db.session.add(Credit(
-                            track_id=track.id,
-                            artist_id=artist_obj.id if artist_obj else None,
-                            artist_name=credited_name,
-                            role=role
-                        ))
-                        count += 1
+                    album_added += _process_recording_relations(db_track, relations, seen)
 
             try:
                 db.session.commit()
-                print(f"  Added {count} credits.")
-                total_added += count
+                print(f"  ✓ Added {album_added} credits.")
+                total_added += album_added
+                total_albums_done += 1
             except IntegrityError:
                 db.session.rollback()
-                print(f"  Duplicate credits on commit, rolled back.")
+                print("  ✗ IntegrityError on commit, rolled back.")
                 total_skipped += 1
 
-        print(f"\nMusicBrainz credits complete. Added: {total_added} | Skipped: {total_skipped}")
+        print(f"\nMB credits complete. "
+              f"Albums processed: {total_albums_done} | Credits added: {total_added} | Skipped: {total_skipped}")
 
 
 # ── Discogs ────────────────────────────────────────────────────────────────────
@@ -295,11 +364,16 @@ def seed_discogs(mode='missing'):
 if __name__ == '__main__':
     mode = sys.argv[1] if len(sys.argv) > 1 else 'discogs'
 
+    album_id = None
+    if '--album-id' in sys.argv:
+        idx = sys.argv.index('--album-id')
+        album_id = int(sys.argv[idx + 1])
+
     if mode == 'mb':
-        seed_mb()
+        seed_mb(album_id=album_id)
     elif mode == 'discogs':
         replace = '--replace' in sys.argv
         seed_discogs('replace' if replace else 'missing')
     else:
         print(f"Unknown mode: {mode}")
-        print("Usage: python seeds/credits.py [mb | discogs [--replace]]")
+        print("Usage: python seeds/credits.py [mb [--album-id N] | discogs [--replace]]")
