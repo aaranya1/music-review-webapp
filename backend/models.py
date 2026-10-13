@@ -44,6 +44,7 @@ class Artist(db.Model):
     image_url = db.Column(db.Text, nullable=True)
     background_url = db.Column(db.Text, nullable=True)
     color_accent = db.Column(db.String(7), nullable=True)  # e.g. '#a4c8e1'
+    last_seeded_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     albums = db.relationship(
