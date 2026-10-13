@@ -5,3 +5,8 @@
   margin: 0 auto;
   padding: 2rem;
 }
+
+/* Phones: less outer padding so pages and the navbar have room */
+@media (max-width: 640px) {
+  #root { padding: 1rem; }
+}

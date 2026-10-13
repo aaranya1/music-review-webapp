@@ -1,13 +1,14 @@
 from flask import Blueprint, request, g
 from models import Review, Follow, ReviewLike
-from sqlalchemy import func
-from routes.auth import token_required
+from sqlalchemy import func, select
+from routes.auth import token_required, optional_auth
 from serializers import serialize_review, review_load_options
 
 home_bp = Blueprint('home', __name__)
 
 
 @home_bp.route('/')
+@optional_auth
 def home():
     latest_reviews = (
         Review.query
@@ -18,7 +19,7 @@ def home():
     )
 
     return {
-        "latest_reviews": [serialize_review(r) for r in latest_reviews]
+        "latest_reviews": [serialize_review(r, g.user_id) for r in latest_reviews]
     }
 
 
@@ -28,12 +29,7 @@ def feed():
     page = request.args.get('page', 1, type=int)
     per_page = min(request.args.get('per_page', 20, type=int), 50)
 
-    following_ids = (
-        Follow.query
-        .filter_by(follower_id=g.user_id)
-        .with_entities(Follow.following_id)
-        .subquery()
-    )
+    following_ids = select(Follow.following_id).where(Follow.follower_id == g.user_id)
 
     pagination = (
         Review.query
@@ -44,7 +40,7 @@ def feed():
     )
 
     return {
-        "reviews": [serialize_review(r) for r in pagination.items],
+        "reviews": [serialize_review(r, g.user_id) for r in pagination.items],
         "page": pagination.page,
         "total_pages": pagination.pages,
         "total": pagination.total,
@@ -52,6 +48,7 @@ def feed():
 
 
 @home_bp.route('/feed/popular')
+@optional_auth
 def feed_popular():
     page = request.args.get('page', 1, type=int)
     per_page = min(request.args.get('per_page', 20, type=int), 50)
@@ -70,7 +67,7 @@ def feed_popular():
     )
 
     return {
-        "reviews": [serialize_review(r) for r in pagination.items],
+        "reviews": [serialize_review(r, g.user_id) for r in pagination.items],
         "page": pagination.page,
         "total_pages": pagination.pages,
         "total": pagination.total,

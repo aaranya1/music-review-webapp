@@ -12,7 +12,8 @@ def review_load_options():
     )
 
 
-def serialize_review(review):
+def serialize_review(review, viewer_id=None):
+    """viewer_id: the logged-in user, if any, to report whether they liked it."""
     album = review.album
     return {
         "id": review.id,
@@ -23,6 +24,7 @@ def serialize_review(review):
         "created_at": review.created_at,
         "updated_at": review.updated_at or None,
         "like_count": len(review.likes),
+        "liked_by_me": viewer_id is not None and any(l.user_id == viewer_id for l in review.likes),
         "comment_count": len(review.comments),
         "album": {
             "mbid": album.mbid,

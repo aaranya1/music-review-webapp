@@ -35,8 +35,10 @@ function LoginModal({ onClose, onSwitchToRegister }) {
         try {
             await login(username, password)
             onClose()
+            // Stay on the current page; follow a redirect only if a login-only
+            // page sent the visitor here
             const from = location.state?.from?.pathname
-            navigate(from || '/albums', { replace: true })
+            if (from) navigate(from, { replace: true })
         } catch {
             setError('Incorrect username or password.')
         } finally {

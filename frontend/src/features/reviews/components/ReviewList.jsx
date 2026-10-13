@@ -6,6 +6,7 @@ import { getAvatarColor } from '@/utils/avatar.js';
 import api from '@/api/client.js';
 import StarRating from '@/components/ui/StarRating.jsx';
 import StarPicker from '@/components/ui/StarPicker.jsx';
+import ReviewActions from './ReviewActions.jsx';
 import './ReviewList.css';
 
 function ReviewItem({ review, currentUser, onUpdated, onDeleted }) {
@@ -93,6 +94,7 @@ function ReviewItem({ review, currentUser, onUpdated, onDeleted }) {
                             <button className='review-item__delete-btn' onClick={handleDelete}>Delete</button>
                         </div>
                     )}
+                    <ReviewActions review={review} />
                 </>
             )}
         </div>

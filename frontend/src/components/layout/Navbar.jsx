@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/useAuth.js';
 import { getAvatarColor } from '@/utils/avatar.js';
+import NotificationBell from '@/features/notifications/components/NotificationBell.jsx';
 import LoginModal from './LoginModal.jsx';
 import RegisterModal from './RegisterModal.jsx';
 import api from '@/api/client.js';
 import './Navbar.css';
+
+const navClass = ({ isActive }) => `navbar__link ${isActive ? 'navbar__link--active' : ''}`;
 
 function SearchDropdown({ results, query, onSelect }) {
     const hasAlbums = results?.albums?.length > 0;
@@ -83,14 +86,12 @@ function SearchDropdown({ results, query, onSelect }) {
 }
 
 function Navbar() {
-    const { user, isAuthenticated, loading, logout } = useAuth();
+    const { user, isAuthenticated, loading, logout, authModal, openLogin, openRegister, closeAuthModal } = useAuth();
     const navigate = useNavigate();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [dropdownResults, setDropdownResults] = useState(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [showLogin, setShowLogin] = useState(false);
-    const [showRegister, setShowRegister] = useState(false);
 
     const searchRef = useRef(null);
     const wrapperRef = useRef(null);
@@ -151,8 +152,6 @@ function Navbar() {
         navigate('/', { replace: true });
     };
 
-    const switchToRegister = () => { setShowLogin(false); setShowRegister(true); };
-    const switchToLogin = () => { setShowRegister(false); setShowLogin(true); };
 
     if (loading) return null;
 
@@ -166,7 +165,10 @@ function Navbar() {
                 </Link>
 
                 <div className='navbar__links'>
-                    <Link to='/albums' className='navbar__link'>Albums</Link>
+                    {isAuthenticated && <NavLink to='/' end className={navClass}>Feed</NavLink>}
+                    <NavLink to='/albums' className={navClass}>Albums</NavLink>
+                    <NavLink to='/artists' className={navClass}>Artists</NavLink>
+                    <NavLink to='/lists' className={navClass}>Lists</NavLink>
                 </div>
 
                 {/* ── Search with dropdown ── */}
@@ -201,6 +203,7 @@ function Navbar() {
 
                 {isAuthenticated ? (
                     <div className='navbar__user'>
+                        <NotificationBell />
                         <Link
                             to={`/users/${user.id}`}
                             className='navbar__avatar'
@@ -218,14 +221,14 @@ function Navbar() {
                     </div>
                 ) : (
                     <div className='navbar__auth'>
-                        <button className='navbar__auth-link' onClick={() => setShowLogin(true)}>Login</button>
-                        <button className='navbar__auth-btn' onClick={() => setShowRegister(true)}>Register</button>
+                        <button className='navbar__auth-link' onClick={openLogin}>Login</button>
+                        <button className='navbar__auth-btn' onClick={openRegister}>Register</button>
                     </div>
                 )}
             </nav>
 
-            {showLogin && <LoginModal onClose={() => setShowLogin(false)} onSwitchToRegister={switchToRegister} />}
-            {showRegister && <RegisterModal onClose={() => setShowRegister(false)} onSwitchToLogin={switchToLogin} />}
+            {authModal === 'login' && <LoginModal onClose={closeAuthModal} onSwitchToRegister={openRegister} />}
+            {authModal === 'register' && <RegisterModal onClose={closeAuthModal} onSwitchToLogin={openLogin} />}
         </>
     );
 }

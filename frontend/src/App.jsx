@@ -5,6 +5,9 @@ import Navbar from '@/components/layout/Navbar.jsx';
 import { AlbumList, AlbumDetails } from '@/features/albums';
 import { ArtistList, ArtistDetails } from '@/features/artists';
 import { UserProfile } from '@/features/users';
+import ListsPage from '@/features/lists/components/ListsPage.jsx';
+import ListDetails from '@/features/lists/components/ListDetails.jsx';
+import NotificationsPage from '@/features/notifications/components/NotificationsPage.jsx';
 import SearchPage from '@/pages/SearchPage.jsx';
 import Home from '@/pages/Home.jsx';
 
@@ -28,6 +31,9 @@ function App() {
           <Route path='/artists' element={<ArtistList />} />
           <Route path='/artists/:mbid' element={<ArtistDetails />} />
           <Route path='/users/:user_id' element={<UserProfile />} />
+          <Route path='/lists' element={<ListsPage />} />
+          <Route path='/lists/:id' element={<ListDetails />} />
+          <Route path='/notifications' element={<NotificationsPage />} />
           <Route path='*' element={
             <div style={{ textAlign: 'center', padding: '6rem 2rem', fontFamily: 'var(--font-body)', color: '#706c68' }}>
               <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: '#ddd9d1', marginBottom: '0.5rem' }}>404</h2>

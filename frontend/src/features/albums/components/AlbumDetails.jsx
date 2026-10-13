@@ -4,6 +4,8 @@ import { useAuth } from '@/context/useAuth.js';
 import { useApi } from '@/utils/useApi.js';
 import ReviewModal from '@/features/reviews/components/ReviewModal.jsx';
 import ReviewList from '@/features/reviews/components/ReviewList.jsx';
+import WantToListenButton from '@/features/backlog/components/WantToListenButton.jsx';
+import AddToListButton from '@/features/lists/components/AddToListButton.jsx';
 import { AlbumDetailSkeleton } from '@/components/ui/Skeleton.jsx';
 import StarRating from '@/components/ui/StarRating.jsx';
 import { parseHex } from '@/utils/avatar.js';
@@ -171,7 +173,7 @@ function AlbumDetails() {
     const { mbid } = useParams()
     const { state } = useLocation()
     const fromArtist = state?.fromArtist
-    const { user } = useAuth()
+    const { user, openLogin } = useAuth()
 
     // Keyed by mbid so a broken cover on one album doesn't hide the next one's
     const [imgErrorFor, setImgErrorFor] = useState(null)
@@ -285,16 +287,22 @@ function AlbumDetails() {
                         )}
                     </div>
 
-                    {!user ? (
-                        <p className='album-detail-rating--none'>Log in to write a review</p>
-                    ) : !hasReviewed && (
-                        <button
-                            className='album-detail-review-btn'
-                            onClick={() => setShowModal(true)}
-                        >
-                            + Write a Review
-                        </button>
-                    )}
+                    <div className='album-detail-actions'>
+                        {!user ? (
+                            <button className='album-detail-review-btn' onClick={openLogin}>
+                                Log in to review
+                            </button>
+                        ) : !hasReviewed && (
+                            <button
+                                className='album-detail-review-btn'
+                                onClick={() => setShowModal(true)}
+                            >
+                                + Write a Review
+                            </button>
+                        )}
+                        <WantToListenButton mbid={mbid} />
+                        <AddToListButton mbid={mbid} />
+                    </div>
                 </div>
             </div>
 

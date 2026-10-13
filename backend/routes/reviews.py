@@ -1,7 +1,7 @@
 from flask import Blueprint, request, g
 from models import Review, ReviewLike, ReviewComment, CommentLike
 from db import db
-from routes.auth import token_required
+from routes.auth import token_required, optional_auth
 from sqlalchemy.orm import selectinload
 from serializers import serialize_review, review_load_options
 from notifications_service import create_notification
@@ -14,6 +14,7 @@ URL_MAX = 2000
 reviews_bp = Blueprint('reviews', __name__)
 
 @reviews_bp.route('/reviews')
+@optional_auth
 def get_reviews():
     page = request.args.get('page', 1, type=int)
     per_page = min(request.args.get('per_page', 20, type=int), 50)
@@ -26,7 +27,7 @@ def get_reviews():
     )
 
     return {
-        "reviews": [serialize_review(r) for r in pagination.items],
+        "reviews": [serialize_review(r, g.user_id) for r in pagination.items],
         "page": pagination.page,
         "total_pages": pagination.pages,
         "total": pagination.total,
@@ -81,7 +82,7 @@ def toggle_review_like(review_id):
     if existing:
         db.session.delete(existing)
         db.session.commit()
-        return {"liked": False}
+        return {"liked": False, "like_count": ReviewLike.query.filter_by(review_id=review_id).count()}
     like = ReviewLike(user_id=g.user_id, review_id=review_id)
     db.session.add(like)
     create_notification(
@@ -92,12 +93,13 @@ def toggle_review_like(review_id):
         target_id=review.id,
     )
     db.session.commit()
-    return {"liked": True}, 201
+    return {"liked": True, "like_count": ReviewLike.query.filter_by(review_id=review_id).count()}, 201
 
 
 # ── Review comments ───────────────────────────────────────────────────────────
 
 @reviews_bp.route('/reviews/<int:review_id>/comments', methods=['GET'])
+@optional_auth
 def get_review_comments(review_id):
     Review.query.get_or_404(review_id)
     comments = (
@@ -115,6 +117,7 @@ def get_review_comments(review_id):
             "body": c.body,
             "media_url": c.media_url,
             "like_count": len(c.likes),
+            "liked_by_me": g.user_id is not None and any(l.user_id == g.user_id for l in c.likes),
             "created_at": c.created_at,
         }
         for c in comments
@@ -179,7 +182,7 @@ def toggle_comment_like(review_id, comment_id):
     if existing:
         db.session.delete(existing)
         db.session.commit()
-        return {"liked": False}
+        return {"liked": False, "like_count": CommentLike.query.filter_by(comment_id=comment_id).count()}
     like = CommentLike(user_id=g.user_id, comment_id=comment_id)
     db.session.add(like)
     create_notification(
@@ -190,4 +193,4 @@ def toggle_comment_like(review_id, comment_id):
         target_id=comment.id,
     )
     db.session.commit()
-    return {"liked": True}, 201
+    return {"liked": True, "like_count": CommentLike.query.filter_by(comment_id=comment_id).count()}, 201

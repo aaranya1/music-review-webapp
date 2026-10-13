@@ -297,3 +297,86 @@
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+/* ── Clickable stats (switch tabs) ── */
+button.profile-header__stat {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+}
+
+button.profile-header__stat:hover .profile-header__stat-value { color: #c8a96e; }
+
+.profile-header__stats { flex-wrap: wrap; row-gap: 0.4rem; }
+
+/* ── Follow ── */
+.profile-follow-btn {
+    margin-left: auto;
+    align-self: center;
+    background: #c8a96e;
+    color: #0e0c0a;
+    border: 1px solid #c8a96e;
+    border-radius: 4px;
+    padding: 0.55rem 1.4rem;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.profile-follow-btn--on { background: transparent; color: #c8a96e; }
+.profile-follow-btn--on:hover { border-color: #e07070; color: #e07070; }
+.profile-follow-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* ── Tabs ── */
+.profile-tabs { margin: -1.5rem 0 1.75rem; overflow-x: auto; }
+
+/* ── Followers / following ── */
+.profile-people {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem 1.5rem;
+}
+
+.profile-person {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.5rem 0;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.profile-person:hover { color: #c8a96e; }
+
+.profile-person__avatar {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border: 1px solid;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.profile-empty a { color: #c8a96e; }
+
+/* ── Phones ── */
+@media (max-width: 640px) {
+    .profile-header { flex-wrap: wrap; gap: 1.25rem; margin-bottom: 2rem; }
+    .profile-avatar { width: 64px; height: 64px; font-size: 1.6rem; }
+    .profile-header__info { flex: 1; min-width: 0; }
+    .profile-header__stats { gap: 1rem; }
+    .profile-follow-btn { margin-left: 0; width: 100%; }
+    .profile-tabs { margin-top: -0.5rem; }
+}

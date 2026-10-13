@@ -1,7 +1,7 @@
 from flask import Blueprint
 from models import Album, Review, Track
 from db import db
-from routes.auth import token_required
+from routes.auth import token_required, optional_auth
 from flask import request, g
 from sqlalchemy.orm import selectinload
 from serializers import serialize_review, review_load_options
@@ -101,6 +101,7 @@ def get_album(mbid):
     }
 
 @albums_bp.route('/albums/<string:mbid>/reviews')
+@optional_auth
 def get_album_reviews(mbid):
     album = Album.query.filter_by(mbid=mbid).first_or_404()
     # Not paginated on purpose: the album page derives its rating distribution
@@ -112,7 +113,7 @@ def get_album_reviews(mbid):
         .order_by(Review.created_at.desc(), Review.id.desc())
         .all()
     )
-    return {"reviews": [serialize_review(r) for r in reviews]}
+    return {"reviews": [serialize_review(r, g.user_id) for r in reviews]}
 
 @albums_bp.route('/albums/<string:mbid>/reviews', methods=['POST'])
 @token_required

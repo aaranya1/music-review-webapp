@@ -48,11 +48,18 @@ def _hydrate_target(target_type, target_id):
         comment = ReviewComment.query.get(target_id)
         if not comment:
             return None
+        album = comment.review.album
         return {
             "kind": "comment",
             "id": comment.id,
             "review_id": comment.review_id,
             "body": comment.body,
+            # So the client can link the notification to the album page
+            "album": {
+                "mbid": album.mbid,
+                "title": album.title,
+                "cover_url": album.cover_url,
+            },
         }
     return None
 

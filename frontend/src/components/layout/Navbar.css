@@ -52,6 +52,8 @@
     background: #1a1816;
 }
 
+.navbar__link--active { color: #ddd9d1; }
+
 /* ── Search wrapper ── */
 .navbar__search-wrap {
     position: relative;
@@ -327,4 +329,28 @@
     text-align: center;
     padding: 0.5rem;
     border-top: 1px solid #282422;
+}
+/* ── Narrow screens ── */
+@media (max-width: 860px) {
+    .navbar { gap: 1rem; padding: 0 1.25rem; }
+    .navbar__username { display: none; }
+}
+
+@media (max-width: 640px) {
+    .navbar {
+        flex-wrap: wrap;
+        height: auto;
+        row-gap: 0.4rem;
+        padding: 0.6rem 1rem;
+    }
+    /* Row 1: logo + account controls; row 2: search; row 3: links */
+    .navbar__user, .navbar__auth { order: 1; }
+    .navbar__search-wrap { order: 2; flex-basis: 100%; max-width: none; }
+    /* Links scroll sideways if they don't fit */
+    .navbar__links {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        flex-shrink: 1;
+    }
 }

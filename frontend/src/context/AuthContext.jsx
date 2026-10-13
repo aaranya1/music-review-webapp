@@ -7,6 +7,10 @@ export function AuthProvider({ children }) {
     // Only "loading" if there's a stored token to validate; otherwise we already know
     const [loading, setLoading] = useState(() => !!localStorage.getItem('accessToken'))
 
+    // Which auth dialog is open ('login' | 'register' | null). Lives here so any
+    // component can prompt a logged-out visitor to log in.
+    const [authModal, setAuthModal] = useState(null)
+
     const isAuthenticated = !!user
 
     useEffect(() => {
@@ -57,7 +61,11 @@ export function AuthProvider({ children }) {
             register,
             login,
             logout,
-            loading
+            loading,
+            authModal,
+            openLogin: () => setAuthModal('login'),
+            openRegister: () => setAuthModal('register'),
+            closeAuthModal: () => setAuthModal(null),
         }}>
             {children}
         </AuthContext.Provider>

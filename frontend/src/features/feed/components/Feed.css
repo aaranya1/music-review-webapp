@@ -1,0 +1,159 @@
+.feed {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+}
+
+/* ── Tabs ── */
+.feed__tabs {
+    display: flex;
+    gap: 1.5rem;
+    border-bottom: 1px solid #282422;
+    margin-bottom: 0.5rem;
+}
+
+.feed__tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.6rem 0;
+    margin-bottom: -1px;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #706c68;
+    cursor: pointer;
+}
+
+.feed__tab:hover { color: #ddd9d1; }
+.feed__tab--active { color: #ddd9d1; border-bottom-color: #c8a96e; }
+
+.feed__loader { display: flex; justify-content: center; padding: 2rem 0; }
+
+.feed__status {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: #706c68;
+    text-align: center;
+    padding: 2.5rem 0;
+}
+
+.feed__link {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: #c8a96e;
+    cursor: pointer;
+}
+
+.feed__link:hover { text-decoration: underline; }
+
+.feed__more {
+    display: block;
+    margin: 1.5rem auto 0;
+    background: none;
+    border: 1px solid #282422;
+    border-radius: 6px;
+    padding: 0.5rem 1.4rem;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    color: #ddd9d1;
+    cursor: pointer;
+}
+
+.feed__more:hover { border-color: #44403c; }
+
+/* ── Review card ── */
+.review-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #282422;
+}
+
+.review-card__cover-link { flex-shrink: 0; }
+
+.review-card__cover {
+    width: 84px;
+    height: 84px;
+    border-radius: 4px;
+    object-fit: cover;
+    display: block;
+}
+
+.review-card__cover--fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1816;
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    color: #44403c;
+}
+
+.review-card__body { flex: 1; min-width: 0; }
+
+.review-card__album { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+
+.review-card__title {
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #f2ede4;
+    text-decoration: none;
+}
+
+.review-card__title:hover { color: #c8a96e; }
+
+.review-card__year {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: #706c68;
+}
+
+.review-card__artists {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: #9a9690;
+    margin: 0.1rem 0 0.5rem;
+}
+
+.review-card__artists a { color: inherit; text-decoration: none; }
+.review-card__artists a:hover { color: #ddd9d1; }
+
+.review-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.review-card__user {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.review-card__user:hover { text-decoration: underline; }
+
+.review-card__time {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: #706c68;
+}
+
+.review-card__text {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: #ddd9d1;
+    margin: 0.5rem 0 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+    .review-card__cover { width: 60px; height: 60px; }
+}

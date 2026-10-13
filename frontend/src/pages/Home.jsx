@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/useAuth.js';
-import api from '@/api/client.js';
+import { useApi } from '@/utils/useApi.js';
+import Feed from '@/features/feed/components/Feed.jsx';
 import './Home.css';
 
-function Home() {
+/** Logged-out landing page: hero + the latest reviews. */
+function Landing() {
     const { isAuthenticated } = useAuth()
-    const [latestReviews, setLatestReviews] = useState([])
-
-    useEffect(() => {
-        api('/')
-            .then(data => setLatestReviews(data.latest_reviews || []))
-            .catch(() => setLatestReviews([]))
-    }, [])
+    const { data } = useApi('/')
+    const latestReviews = data?.latest_reviews || []
 
     return (
         <div className='home-root'>
@@ -67,6 +64,11 @@ function Home() {
             )}
         </div>
     )
+}
+
+function Home() {
+    const { isAuthenticated } = useAuth()
+    return isAuthenticated ? <Feed /> : <Landing />
 }
 
 export default Home

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/useAuth.js';
 import './AuthModal.css';
 
@@ -11,7 +10,6 @@ function RegisterModal({ onClose, onSwitchToLogin }) {
     const [submitting, setSubmitting] = useState(false)
 
     const { register } = useAuth()
-    const navigate = useNavigate()
 
     useEffect(() => {
         const handleKey = (e) => { if (e.key === 'Escape') onClose() }
@@ -35,7 +33,6 @@ function RegisterModal({ onClose, onSwitchToLogin }) {
         try {
             await register(username, email, password)
             onClose()
-            navigate('/albums', { replace: true })
         } catch (err) {
             setError(err.message || 'Registration failed.')
         } finally {
