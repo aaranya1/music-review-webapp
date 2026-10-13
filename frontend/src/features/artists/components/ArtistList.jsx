@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import api from '@/api/client.js';
+import { useApi } from '@/utils/useApi.js';
 import { useScrollRestoration } from '@/utils/useScrollRestoration.js';
 import { getAvatarColor } from '@/utils/avatar.js';
 import { ArtistCardSkeleton } from '@/components/ui/Skeleton.jsx';
@@ -38,27 +38,14 @@ function ArtistCard({ artist }) {
 function ArtistList() {
     useScrollRestoration()
     const [searchParams, setSearchParams] = useSearchParams()
-    const [artists, setArtists]       = useState([])
-    const [loading, setLoading]       = useState(true)
-    const [error, setError]           = useState(null)
-    const [totalPages, setTotalPages] = useState(1)
     const [page, setPage] = useState(() => {
         const p = Number(searchParams.get('page'))
         return p > 0 ? p : 1
     })
 
-    useEffect(() => {
-        setLoading(true)
-        setError(null)
-
-        api(`/artists?page=${page}&per_page=20`)
-            .then(data => {
-                setArtists(data.artists || [])
-                setTotalPages(data.total_pages || 1)
-            })
-            .catch(err => setError(err.message || 'Error fetching artists'))
-            .finally(() => setLoading(false))
-    }, [page])
+    const { data, error, loading, reload } = useApi(`/artists?page=${page}&per_page=20`)
+    const artists    = data?.artists || []
+    const totalPages = data?.total_pages || 1
 
     const handleSetPage = (newPage) => {
         setPage(newPage)
@@ -80,7 +67,7 @@ function ArtistList() {
             {error && (
                 <div className='artist-list-error'>
                     <p>Something went wrong.</p>
-                    <button onClick={() => handleSetPage(page)}>Retry</button>
+                    <button onClick={reload}>Retry</button>
                 </div>
             )}
 

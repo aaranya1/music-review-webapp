@@ -10,12 +10,17 @@ def search():
     query = request.args.get('q', '').strip()
 
     if not query:
-        return jsonify({'error': 'Missing query parameter'}), 400
+        return jsonify({'message': 'Missing query parameter'}), 400
+    if len(query) > 100:
+        return jsonify({'message': 'Query must be at most 100 characters'}), 400
+
+    # Escape LIKE wildcards so a search for "_" or "%" is literal
+    pattern = '%' + query.replace('!', '!!').replace('%', '!%').replace('_', '!_') + '%'
 
     albums = (
         Album.query
         .options(selectinload(Album.artists))
-        .filter(Album.title.ilike(f'%{query}%'))
+        .filter(Album.title.ilike(pattern, escape='!'))
         .order_by(Album.title)
         .limit(20)
         .all()
@@ -23,7 +28,7 @@ def search():
 
     artists = (
         Artist.query
-        .filter(Artist.name.ilike(f'%{query}%'))
+        .filter(Artist.name.ilike(pattern, escape='!'))
         .order_by(Artist.name)
         .limit(10)
         .all()

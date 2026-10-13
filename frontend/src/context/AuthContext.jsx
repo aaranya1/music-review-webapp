@@ -1,19 +1,16 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../api/client.js';
-const AuthContext = createContext()
+import { AuthContext } from './useAuth.js';
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
-    const [loading, setLoading] = useState(true)
+    // Only "loading" if there's a stored token to validate; otherwise we already know
+    const [loading, setLoading] = useState(() => !!localStorage.getItem('accessToken'))
 
     const isAuthenticated = !!user
 
     useEffect(() => {
-        const token = localStorage.getItem('accessToken')
-        if(!token){
-            setLoading(false)
-            return
-        }
+        if (!localStorage.getItem('accessToken')) return
 
         api('/me')
             .then(data => setUser(data))
@@ -65,8 +62,4 @@ export function AuthProvider({ children }) {
             {children}
         </AuthContext.Provider>
     )
-}
-
-export function useAuth(){
-    return useContext(AuthContext)
 }

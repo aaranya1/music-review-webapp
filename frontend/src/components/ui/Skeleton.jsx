@@ -43,7 +43,7 @@ export function AlbumDetailSkeleton() {
                 {[...Array(8)].map((_, i) => (
                     <div key={i} className='album-detail-skeleton__track-row'>
                         <Skeleton width='24px' height='0.8rem' />
-                        <Skeleton width={`${55 + Math.random() * 30}%`} height='0.8rem' />
+                        <Skeleton width={`${55 + ((i * 37) % 30)}%`} height='0.8rem' />
                         <Skeleton width='36px' height='0.8rem' />
                     </div>
                 ))}

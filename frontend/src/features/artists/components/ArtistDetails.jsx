@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import api from '@/api/client.js';
+import { useApi } from '@/utils/useApi.js';
 import AlbumCard from '@/features/albums/components/AlbumCard.jsx';
 import { ArtistDetailSkeleton } from '@/components/ui/Skeleton.jsx';
 import { getAvatarColor, parseHex } from '@/utils/avatar.js';
@@ -9,21 +9,11 @@ import './ArtistDetails.css';
 function ArtistDetails() {
     const { mbid } = useParams()
 
-    const [artist, setArtist] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
     const [sortDir, setSortDir] = useState('desc')
+    const { data: artist, error, loading } = useApi(`/artists/${mbid}`)
 
     useEffect(() => {
         window.scrollTo(0, 0)
-        setLoading(true)
-        setError(null)
-        setArtist(null)
-
-        api(`/artists/${mbid}`)
-            .then(data => setArtist(data))
-            .catch(err => setError(err.message || 'Error fetching artist'))
-            .finally(() => setLoading(false))
     }, [mbid])
 
     if (loading) return <ArtistDetailSkeleton />

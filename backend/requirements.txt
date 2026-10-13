@@ -18,6 +18,7 @@ click==8.3.1
 colorama==0.4.6
 cryptography==46.0.3
 flask-cors==6.0.2
+gunicorn==23.0.0
 greenlet==3.3.0
 idna==3.11
 itsdangerous==2.2.0
@@ -25,7 +26,6 @@ limits==5.8.0
 ordered-set==4.1.0
 pillow==12.1.1
 psycopg2-binary==2.9.11
-psycopg==3.3.2
 pycparser==3.0
 python-dotenv==1.2.1
 requests==2.32.5

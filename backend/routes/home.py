@@ -1,9 +1,8 @@
 from flask import Blueprint, request, g
 from models import Review, Follow, ReviewLike
 from sqlalchemy import func
-from sqlalchemy.orm import selectinload
 from routes.auth import token_required
-from serializers import serialize_review
+from serializers import serialize_review, review_load_options
 
 home_bp = Blueprint('home', __name__)
 
@@ -12,7 +11,7 @@ home_bp = Blueprint('home', __name__)
 def home():
     latest_reviews = (
         Review.query
-        .options(selectinload(Review.album), selectinload(Review.likes))
+        .options(*review_load_options())
         .order_by(Review.created_at.desc())
         .limit(10)
         .all()
@@ -39,7 +38,7 @@ def feed():
     pagination = (
         Review.query
         .filter(Review.user_id.in_(following_ids))
-        .options(selectinload(Review.album), selectinload(Review.likes))
+        .options(*review_load_options())
         .order_by(Review.created_at.desc(), Review.id.desc())
         .paginate(page=page, per_page=per_page, error_out=False)
     )
@@ -65,7 +64,7 @@ def feed_popular():
         Review.query
         .outerjoin(ReviewLike, ReviewLike.review_id == Review.id)
         .group_by(Review.id)
-        .options(selectinload(Review.album), selectinload(Review.likes))
+        .options(*review_load_options())
         .order_by(like_count.desc(), Review.created_at.desc())
         .paginate(page=page, per_page=per_page, error_out=False)
     )

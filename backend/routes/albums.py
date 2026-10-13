@@ -1,9 +1,12 @@
 from flask import Blueprint
-from models import Album, Review, Track, Credit, ReviewLike, ReviewComment
+from models import Album, Review, Track
 from db import db
 from routes.auth import token_required
 from flask import request, g
 from sqlalchemy.orm import selectinload
+from serializers import serialize_review, review_load_options
+from request_utils import get_json_body, parse_rating, check_length
+from routes.reviews import REVIEW_TEXT_MAX
 
 albums_bp = Blueprint('albums', __name__)
 
@@ -100,37 +103,28 @@ def get_album(mbid):
 @albums_bp.route('/albums/<string:mbid>/reviews')
 def get_album_reviews(mbid):
     album = Album.query.filter_by(mbid=mbid).first_or_404()
+    # Not paginated on purpose: the album page derives its rating distribution
+    # and "already reviewed" state from the full list.
     reviews = (
         Review.query
         .filter_by(album_id=album.id)
-        .options(
-            db.joinedload(Review.user),
-            selectinload(Review.likes),
-            selectinload(Review.comments),
-        )
+        .options(*review_load_options())
+        .order_by(Review.created_at.desc(), Review.id.desc())
         .all()
     )
-    album_reviews = []
-    for review in reviews:
-        album_reviews.append({
-            "id": review.id,
-            "user_id": review.user_id,
-            "username": review.user.username,
-            "rating": review.rating,
-            "comment": review.review_text,
-            "like_count": len(review.likes),
-            "comment_count": len(review.comments),
-            "created_at": review.created_at,
-            "updated_at": review.updated_at
-        })
-    return {"reviews": album_reviews}
+    return {"reviews": [serialize_review(r) for r in reviews]}
 
 @albums_bp.route('/albums/<string:mbid>/reviews', methods=['POST'])
 @token_required
 def create_review(mbid):
     album = Album.query.filter_by(mbid=mbid).first_or_404()
-    data = request.get_json()
-    input_rating = data.get('rating')
+    data = get_json_body()
+    input_rating = parse_rating(data.get('rating'))
+
+    review_text = data.get('review_text') or ''
+    if not isinstance(review_text, str):
+        return {"message": "review_text must be a string"}, 400
+    check_length(review_text, 'review_text', REVIEW_TEXT_MAX)
 
     existing = Review.query.filter_by(
         user_id=g.user_id,
@@ -140,14 +134,14 @@ def create_review(mbid):
     if existing:
         return {"message": "Review already exists"}, 409
 
-    if input_rating < 0 or input_rating > 5 or input_rating % 0.5 != 0:
+    if input_rating is None:
         return {"message": "Rating must be between 0 and 5 in 0.5 increments"}, 400
     
     new_review = Review(
         user_id=g.user_id,
         album_id=album.id,
         rating=input_rating,
-        review_text=data.get('review_text', '')
+        review_text=review_text
     )
     db.session.add(new_review)
     db.session.commit()

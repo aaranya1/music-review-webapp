@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import api from '@/api/client.js';
+import { useApi } from '@/utils/useApi.js';
 import { useScrollRestoration } from '@/utils/useScrollRestoration.js';
 import AlbumCard from './AlbumCard.jsx';
 import { AlbumCardSkeleton } from '@/components/ui/Skeleton.jsx';
@@ -9,27 +9,14 @@ import './AlbumList.css';
 function AlbumList() {
     useScrollRestoration()
     const [searchParams, setSearchParams] = useSearchParams()
-    const [albums, setAlbums]       = useState([])
-    const [loading, setLoading]     = useState(true)
-    const [error, setError]         = useState(null)
-    const [totalPages, setTotalPages] = useState(1)
     const [page, setPage] = useState(() => {
         const p = Number(searchParams.get('page'))
         return p > 0 ? p : 1
     })
 
-    useEffect(() => {
-        setLoading(true)
-        setError(null)
-
-        api(`/albums?page=${page}&per_page=20`)
-            .then(data => {
-                setAlbums(data.albums || [])
-                setTotalPages(data.total_pages || 1)
-            })
-            .catch(err => setError(err.message || 'Error fetching albums'))
-            .finally(() => setLoading(false))
-    }, [page])
+    const { data, error, loading, reload } = useApi(`/albums?page=${page}&per_page=20`)
+    const albums     = data?.albums || []
+    const totalPages = data?.total_pages || 1
 
     return (
         <div className='album-list-root'>
@@ -46,7 +33,7 @@ function AlbumList() {
             {error && (
                 <div className='album-list-error'>
                     <p>Something went wrong.</p>
-                    <button onClick={() => setPage(p => p)}>Retry</button>
+                    <button onClick={reload}>Retry</button>
                 </div>
             )}
 

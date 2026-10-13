@@ -3,8 +3,13 @@ from models import Review, ReviewLike, ReviewComment, CommentLike
 from db import db
 from routes.auth import token_required
 from sqlalchemy.orm import selectinload
-from serializers import serialize_review
+from serializers import serialize_review, review_load_options
 from notifications_service import create_notification
+from request_utils import get_json_body, parse_rating, check_length
+
+REVIEW_TEXT_MAX = 10000
+COMMENT_BODY_MAX = 2000
+URL_MAX = 2000
 
 reviews_bp = Blueprint('reviews', __name__)
 
@@ -15,7 +20,7 @@ def get_reviews():
 
     pagination = (
         Review.query
-        .options(selectinload(Review.album), selectinload(Review.likes))
+        .options(*review_load_options())
         .order_by(Review.created_at.desc(), Review.id.desc())
         .paginate(page=page, per_page=per_page, error_out=False)
     )
@@ -34,14 +39,21 @@ def update_review(review_id):
     if review.user_id != g.user_id:
         return {"message": "Unauthorized"}, 403
 
-    data = request.get_json()
-    new_rating = data.get('rating', review.rating)
+    data = get_json_body()
 
-    if new_rating < 0 or new_rating > 5 or new_rating % 0.5 != 0:
-        return {"message": "Rating must be between 0 and 5 in 0.5 increments"}, 400
-    
-    review.rating = new_rating
-    review.review_text = data.get('review_text', review.review_text)
+    if 'rating' in data:
+        new_rating = parse_rating(data['rating'])
+        if new_rating is None:
+            return {"message": "Rating must be between 0 and 5 in 0.5 increments"}, 400
+        review.rating = new_rating
+
+    if 'review_text' in data:
+        text = data['review_text']
+        if text is not None and not isinstance(text, str):
+            return {"message": "review_text must be a string"}, 400
+        check_length(text, 'review_text', REVIEW_TEXT_MAX)
+        review.review_text = text
+
     review.updated_at = db.func.current_timestamp()
 
     db.session.commit()
@@ -86,13 +98,12 @@ def toggle_review_like(review_id):
 # ── Review comments ───────────────────────────────────────────────────────────
 
 @reviews_bp.route('/reviews/<int:review_id>/comments', methods=['GET'])
-@token_required
 def get_review_comments(review_id):
     Review.query.get_or_404(review_id)
     comments = (
         ReviewComment.query
         .filter_by(review_id=review_id)
-        .options(selectinload(ReviewComment.likes))
+        .options(selectinload(ReviewComment.likes), selectinload(ReviewComment.user))
         .order_by(ReviewComment.created_at.asc())
         .all()
     )
@@ -114,15 +125,25 @@ def get_review_comments(review_id):
 @token_required
 def create_review_comment(review_id):
     review = Review.query.get_or_404(review_id)
-    data = request.get_json()
-    body = data.get('body', '').strip()
-    if not body:
+    data = get_json_body()
+    body = data.get('body')
+    if not isinstance(body, str) or not body.strip():
         return {"message": "Comment body is required"}, 400
+    body = body.strip()
+    check_length(body, 'body', COMMENT_BODY_MAX)
+
+    media_url = data.get('media_url')
+    if media_url is not None:
+        # Only http(s) — this is user input that a client may render as a link or image
+        if not isinstance(media_url, str) or not media_url.startswith(('https://', 'http://')):
+            return {"message": "media_url must be an http(s) URL"}, 400
+        check_length(media_url, 'media_url', URL_MAX)
+
     comment = ReviewComment(
         user_id=g.user_id,
         review_id=review_id,
         body=body,
-        media_url=data.get('media_url')
+        media_url=media_url
     )
     db.session.add(comment)
     db.session.flush()

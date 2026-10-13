@@ -1,7 +1,14 @@
 venv/
+.venv/
 __pycache__/
+**/__pycache__/
 *.pyc
 .env
+.env.*
+!.env.example
+*.sql
+*.log
+instance/
 docker-compose.yml
-migrations/versions/__pycache__/
-seeds/__pycache__/
+Dockerfile
+.dockerignore

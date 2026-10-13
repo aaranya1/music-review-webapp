@@ -1,3 +1,17 @@
+from sqlalchemy.orm import selectinload
+from models import Review
+
+
+def review_load_options():
+    """Eager-load everything serialize_review touches, to avoid per-review queries."""
+    return (
+        selectinload(Review.user),
+        selectinload(Review.album),
+        selectinload(Review.likes),
+        selectinload(Review.comments),
+    )
+
+
 def serialize_review(review):
     album = review.album
     return {
@@ -9,6 +23,7 @@ def serialize_review(review):
         "created_at": review.created_at,
         "updated_at": review.updated_at or None,
         "like_count": len(review.likes),
+        "comment_count": len(review.comments),
         "album": {
             "mbid": album.mbid,
             "title": album.title,

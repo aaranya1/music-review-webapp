@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext.jsx';
-import api from '@/api/client.js';
+import { useAuth } from '@/context/useAuth.js';
+import { useApi } from '@/utils/useApi.js';
 import ReviewModal from '@/features/reviews/components/ReviewModal.jsx';
 import ReviewList from '@/features/reviews/components/ReviewList.jsx';
 import { AlbumDetailSkeleton } from '@/components/ui/Skeleton.jsx';
@@ -173,48 +173,31 @@ function AlbumDetails() {
     const fromArtist = state?.fromArtist
     const { user } = useAuth()
 
-    const [album, setAlbum] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
-    const [imgError, setImgError] = useState(false)
+    // Keyed by mbid so a broken cover on one album doesn't hide the next one's
+    const [imgErrorFor, setImgErrorFor] = useState(null)
+    const imgError = imgErrorFor === mbid
     const [lightboxOpen, setLightboxOpen] = useState(false)
-
-    const [reviews, setReviews] = useState([])
-    const [reviewsLoading, setReviewsLoading] = useState(true)
     const [showModal, setShowModal] = useState(false)
 
-    const fetchAlbum = useCallback(() => {
-        return api(`/albums/${mbid}`)
-            .then(data => setAlbum(data))
-            .catch(err => setError(err.message || 'Error fetching album'))
-    }, [mbid])
-
-    const fetchReviews = useCallback(() => {
-        setReviewsLoading(true)
-        api(`/albums/${mbid}/reviews`)
-            .then(data => setReviews(data.reviews || []))
-            .catch(() => setReviews([]))
-            .finally(() => setReviewsLoading(false))
-    }, [mbid])
+    const albumReq = useApi(`/albums/${mbid}`)
+    const reviewsReq = useApi(`/albums/${mbid}/reviews`)
+    const album = albumReq.data
+    const reviews = reviewsReq.data?.reviews || []
+    // Only show the reviews spinner on first load, not while refreshing after an edit
+    const reviewsLoading = reviewsReq.loading && !reviewsReq.data
 
     useEffect(() => {
         window.scrollTo(0, 0)
-        setLoading(true)
-        setError(null)
-        setAlbum(null)
-        setImgError(false)
-
-        fetchAlbum().finally(() => setLoading(false))
-        fetchReviews()
     }, [mbid])
 
     const handleReviewSubmitted = () => {
-        fetchReviews()
-        fetchAlbum()
+        reviewsReq.reload()
+        albumReq.reload()
     }
 
-    if (loading) return <AlbumDetailSkeleton />
-    if (error) return <div className='album-detail-error'>Error: {error}</div>
+    // Skeleton on first load only; a refresh keeps the current page on screen
+    if (albumReq.loading && !album) return <AlbumDetailSkeleton />
+    if (albumReq.error) return <div className='album-detail-error'>Error: {albumReq.error}</div>
     if (!album) return null
 
     const hasReviewed = reviews.some(r => r.username === user?.username)
@@ -240,7 +223,7 @@ function AlbumDetails() {
                             className='album-detail-hero__cover'
                             src={album.cover_url}
                             alt={`${album.title} cover`}
-                            onError={() => setImgError(true)}
+                            onError={() => setImgErrorFor(mbid)}
                             onClick={() => setLightboxOpen(true)}
                             title='Click to enlarge'
                         />
@@ -302,7 +285,9 @@ function AlbumDetails() {
                         )}
                     </div>
 
-                    {!hasReviewed && (
+                    {!user ? (
+                        <p className='album-detail-rating--none'>Log in to write a review</p>
+                    ) : !hasReviewed && (
                         <button
                             className='album-detail-review-btn'
                             onClick={() => setShowModal(true)}

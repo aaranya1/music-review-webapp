@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext.jsx';
+import { useAuth } from '@/context/useAuth.js';
 import api from '@/api/client.js';
 import './Home.css';
 
 function Home() {
     const { isAuthenticated } = useAuth()
     const [latestReviews, setLatestReviews] = useState([])
-    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         api('/')
             .then(data => setLatestReviews(data.latest_reviews || []))
             .catch(() => setLatestReviews([]))
-            .finally(() => setLoading(false))
     }, [])
 
     return (
@@ -45,9 +43,11 @@ function Home() {
                         {latestReviews.map((review, i) => (
                             <div key={i} className='home-review-card'>
                                 <div className='home-review-card__top'>
-                                    <span className='home-review-card__album'>{review.album}</span>
-                                    {review.artist && (
-                                        <span className='home-review-card__artist'>{review.artist}</span>
+                                    <span className='home-review-card__album'>{review.album?.title}</span>
+                                    {review.album?.artists?.length > 0 && (
+                                        <span className='home-review-card__artist'>
+                                            {review.album.artists.map((a) => a.name).join(', ')}
+                                        </span>
                                     )}
                                 </div>
                                 <div className='home-review-card__bottom'>

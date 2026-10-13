@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext.jsx';
+import { useAuth } from '@/context/useAuth.js';
 import { getAvatarColor } from '@/utils/avatar.js';
 import LoginModal from './LoginModal.jsx';
 import RegisterModal from './RegisterModal.jsx';
@@ -162,62 +162,60 @@ function Navbar() {
         <>
             <nav className='navbar'>
                 <Link to={isAuthenticated ? '/albums' : '/'} className='navbar__logo'>
-                    Nothing
+                    Groovelog
                 </Link>
 
+                <div className='navbar__links'>
+                    <Link to='/albums' className='navbar__link'>Albums</Link>
+                </div>
+
+                {/* ── Search with dropdown ── */}
+                <div className='navbar__search-wrap' ref={wrapperRef}>
+                    <form className='navbar__search' onSubmit={handleSearchSubmit}>
+                        <input
+                            ref={searchRef}
+                            type='text'
+                            className='navbar__search-input'
+                            placeholder='Search albums, artists…'
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            onFocus={() => dropdownResults && setDropdownOpen(true)}
+                            autoComplete='off'
+                        />
+                        <button type='submit' className='navbar__search-btn' aria-label='Search'>
+                            <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round'>
+                                <circle cx='11' cy='11' r='8' />
+                                <line x1='21' y1='21' x2='16.65' y2='16.65' />
+                            </svg>
+                        </button>
+                    </form>
+
+                    {dropdownOpen && (
+                        <SearchDropdown
+                            results={dropdownResults}
+                            query={searchQuery}
+                            onSelect={handleSelect}
+                        />
+                    )}
+                </div>
+
                 {isAuthenticated ? (
-                    <>
-                        <div className='navbar__links'>
-                            <Link to='/albums' className='navbar__link'>Albums</Link>
-                        </div>
-
-                        {/* ── Search with dropdown ── */}
-                        <div className='navbar__search-wrap' ref={wrapperRef}>
-                            <form className='navbar__search' onSubmit={handleSearchSubmit}>
-                                <input
-                                    ref={searchRef}
-                                    type='text'
-                                    className='navbar__search-input'
-                                    placeholder='Search albums, artists…'
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                    onFocus={() => dropdownResults && setDropdownOpen(true)}
-                                    autoComplete='off'
-                                />
-                                <button type='submit' className='navbar__search-btn' aria-label='Search'>
-                                    <svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round'>
-                                        <circle cx='11' cy='11' r='8' />
-                                        <line x1='21' y1='21' x2='16.65' y2='16.65' />
-                                    </svg>
-                                </button>
-                            </form>
-
-                            {dropdownOpen && (
-                                <SearchDropdown
-                                    results={dropdownResults}
-                                    query={searchQuery}
-                                    onSelect={handleSelect}
-                                />
-                            )}
-                        </div>
-
-                        <div className='navbar__user'>
-                            <Link
-                                to={`/users/${user.id}`}
-                                className='navbar__avatar'
-                                style={{ borderColor: avatarColor, color: avatarColor }}
-                                title={user.username}
-                            >
-                                {user.username.charAt(0).toUpperCase()}
-                            </Link>
-                            <Link to={`/users/${user.id}`} className='navbar__username'>
-                                {user.username}
-                            </Link>
-                            <button className='navbar__logout' onClick={handleLogout}>
-                                Logout
-                            </button>
-                        </div>
-                    </>
+                    <div className='navbar__user'>
+                        <Link
+                            to={`/users/${user.id}`}
+                            className='navbar__avatar'
+                            style={{ borderColor: avatarColor, color: avatarColor }}
+                            title={user.username}
+                        >
+                            {user.username.charAt(0).toUpperCase()}
+                        </Link>
+                        <Link to={`/users/${user.id}`} className='navbar__username'>
+                            {user.username}
+                        </Link>
+                        <button className='navbar__logout' onClick={handleLogout}>
+                            Logout
+                        </button>
+                    </div>
                 ) : (
                     <div className='navbar__auth'>
                         <button className='navbar__auth-link' onClick={() => setShowLogin(true)}>Login</button>

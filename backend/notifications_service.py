@@ -15,11 +15,16 @@ def create_notification(user_id, actor_id, type_, target_type=None, target_id=No
         target_type=target_type,
         target_id=target_id,
     )
-    db.session.add(notif)
+    # Savepoint: a dedupe collision (e.g. like → unlike → like again) must only
+    # undo this insert. A plain rollback would also discard the caller's pending
+    # changes, silently dropping the like itself.
+    # Flush the caller's changes first so their own errors (a double-clicked
+    # like) surface normally instead of being swallowed below.
+    db.session.flush()
     try:
-        db.session.flush()
+        with db.session.begin_nested():
+            db.session.add(notif)
     except IntegrityError:
-        db.session.rollback()
         return None
     return notif
 

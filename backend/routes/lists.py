@@ -1,8 +1,13 @@
 from flask import Blueprint, request, g
 from models import List, ListItem, Album
 from db import db
-from routes.auth import token_required
+from routes.auth import token_required, optional_auth
 from sqlalchemy.orm import selectinload
+from request_utils import get_json_body, check_length
+
+TITLE_MAX = 255  # matches List.title column
+DESCRIPTION_MAX = 2000
+NOTE_MAX = 1000
 
 lists_bp = Blueprint('lists', __name__)
 
@@ -73,16 +78,23 @@ def get_lists():
 @lists_bp.route('/lists', methods=['POST'])
 @token_required
 def create_list():
-    data = request.get_json()
-    title = (data.get('title') or '').strip()
-    if not title:
+    data = get_json_body()
+    title = data.get('title')
+    if not isinstance(title, str) or not title.strip():
         return {"message": "Title is required"}, 400
+    title = title.strip()
+    check_length(title, 'title', TITLE_MAX)
+
+    description = data.get('description')
+    if description is not None and not isinstance(description, str):
+        return {"message": "description must be a string"}, 400
+    check_length(description, 'description', DESCRIPTION_MAX)
 
     lst = List(
         user_id=g.user_id,
         title=title,
-        description=data.get('description'),
-        is_public=data.get('is_public', True),
+        description=description,
+        is_public=bool(data.get('is_public', True)),
     )
     db.session.add(lst)
     db.session.commit()
@@ -92,6 +104,7 @@ def create_list():
 # ── Get a single list ─────────────────────────────────────────────────────────
 
 @lists_bp.route('/lists/<int:list_id>', methods=['GET'])
+@optional_auth
 def get_list(list_id):
     lst = (
         List.query
@@ -100,7 +113,7 @@ def get_list(list_id):
         .filter_by(id=list_id)
         .first_or_404()
     )
-    if not lst.is_public and lst.user_id != getattr(g, 'user_id', None):
+    if not lst.is_public and lst.user_id != g.user_id:
         return {"message": "Not found"}, 404
     return _serialize_list(lst, include_items=True)
 
@@ -114,14 +127,20 @@ def update_list(list_id):
     if lst.user_id != g.user_id:
         return {"message": "Unauthorized"}, 403
 
-    data = request.get_json()
+    data = get_json_body()
     if 'title' in data:
-        title = data['title'].strip()
-        if not title:
+        title = data['title']
+        if not isinstance(title, str) or not title.strip():
             return {"message": "Title cannot be empty"}, 400
+        title = title.strip()
+        check_length(title, 'title', TITLE_MAX)
         lst.title = title
     if 'description' in data:
-        lst.description = data['description']
+        description = data['description']
+        if description is not None and not isinstance(description, str):
+            return {"message": "description must be a string"}, 400
+        check_length(description, 'description', DESCRIPTION_MAX)
+        lst.description = description
     if 'is_public' in data:
         lst.is_public = bool(data['is_public'])
 
@@ -152,10 +171,15 @@ def add_item(list_id):
     if lst.user_id != g.user_id:
         return {"message": "Unauthorized"}, 403
 
-    data = request.get_json()
+    data = get_json_body()
     album_mbid = data.get('album_mbid')
-    if not album_mbid:
+    if not isinstance(album_mbid, str) or not album_mbid:
         return {"message": "album_mbid is required"}, 400
+
+    note = data.get('note')
+    if note is not None and not isinstance(note, str):
+        return {"message": "note must be a string"}, 400
+    check_length(note, 'note', NOTE_MAX)
 
     album = Album.query.filter_by(mbid=album_mbid).first_or_404()
 
@@ -167,7 +191,7 @@ def add_item(list_id):
         list_id=list_id,
         album_id=album.id,
         position=max_pos + 1,
-        note=data.get('note'),
+        note=note,
     )
     db.session.add(item)
     lst.updated_at = db.func.current_timestamp()
@@ -201,13 +225,13 @@ def reorder_items(list_id):
         return {"message": "Unauthorized"}, 403
 
     # Expects: {"order": [item_id, item_id, ...]} in desired position order
-    data = request.get_json()
+    data = get_json_body()
     order = data.get('order', [])
-    if not isinstance(order, list):
+    if not isinstance(order, list) or not all(isinstance(i, int) for i in order):
         return {"message": "order must be a list of item IDs"}, 400
 
     items = {item.id: item for item in lst.items}
-    if set(order) != set(items.keys()):
+    if len(order) != len(items) or set(order) != set(items.keys()):
         return {"message": "order must contain every item ID exactly once"}, 400
 
     for position, item_id in enumerate(order, start=1):
@@ -221,13 +245,14 @@ def reorder_items(list_id):
 # ── User's lists ──────────────────────────────────────────────────────────────
 
 @lists_bp.route('/users/<int:user_id>/lists', methods=['GET'])
+@optional_auth
 def get_user_lists(user_id):
     page = request.args.get('page', 1, type=int)
     per_page = min(request.args.get('per_page', 20, type=int), 50)
 
     query = List.query.filter_by(user_id=user_id)
     # Only show private lists to the owner
-    if getattr(g, 'user_id', None) != user_id:
+    if g.user_id != user_id:
         query = query.filter_by(is_public=True)
 
     pagination = (

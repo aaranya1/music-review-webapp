@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
-import { useAuth } from '@/context/AuthContext.jsx';
+import { useAuth } from '@/context/useAuth.js';
 import { Link } from 'react-router-dom';
 import { getAvatarColor } from '@/utils/avatar.js';
 import api from '@/api/client.js';
@@ -11,7 +11,7 @@ import './ReviewList.css';
 function ReviewItem({ review, currentUser, onUpdated, onDeleted }) {
     const [editing, setEditing] = useState(false)
     const [editRating, setEditRating] = useState(review.rating)
-    const [editText, setEditText] = useState(review.comment || '')
+    const [editText, setEditText] = useState(review.review_text || '')
     const [saving, setSaving] = useState(false)
 
     const isOwn = review.username === currentUser?.username
@@ -25,8 +25,8 @@ function ReviewItem({ review, currentUser, onUpdated, onDeleted }) {
             })
             setEditing(false)
             onUpdated()
-        } catch (err) {
-            // keep edit open
+        } catch {
+            // keep edit open so the user can retry
         } finally {
             setSaving(false)
         }
@@ -37,13 +37,15 @@ function ReviewItem({ review, currentUser, onUpdated, onDeleted }) {
         try {
             await api(`/reviews/${review.id}`, { method: 'DELETE' })
             onDeleted()
-        } catch (err) {}
+        } catch {
+            window.alert('Could not delete the review. Please try again.')
+        }
     }
 
     const handleCancel = () => {
         setEditing(false)
         setEditRating(review.rating)
-        setEditText(review.comment || '')
+        setEditText(review.review_text || '')
     }
 
     const usernameColor = getAvatarColor(review.username)
@@ -82,8 +84,8 @@ function ReviewItem({ review, currentUser, onUpdated, onDeleted }) {
                             <span className='review-item__edited'>edited</span>
                         )}
                     </div>
-                    {review.comment && (
-                        <p className='review-item__comment'>{review.comment}</p>
+                    {review.review_text && (
+                        <p className='review-item__comment'>{review.review_text}</p>
                     )}
                     {isOwn && (
                         <div className='review-item__actions'>

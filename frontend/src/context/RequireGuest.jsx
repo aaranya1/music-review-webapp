@@ -1,5 +1,5 @@
-import { Navigate, useLocation } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext.jsx'
+import { Navigate } from 'react-router-dom'
+import { useAuth } from '@/context/useAuth.js'
 
 function RequireGuest({children}){
     const { isAuthenticated } = useAuth()

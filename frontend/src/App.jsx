@@ -1,9 +1,6 @@
-import React, { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import { useAuth } from '@/context/AuthContext.jsx';
-import RequireAuth from '@/context/RequireAuth.jsx';
-import RequireGuest from '@/context/RequireGuest.jsx';
+import { useAuth } from '@/context/useAuth.js';
 import Navbar from '@/components/layout/Navbar.jsx';
 import { AlbumList, AlbumDetails } from '@/features/albums';
 import { ArtistList, ArtistDetails } from '@/features/artists';
@@ -25,12 +22,12 @@ function App() {
         <Navbar />
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path='/search' element={<RequireAuth><SearchPage /></RequireAuth>} />
-          <Route path='/albums' element={<RequireAuth><AlbumList /></RequireAuth>} />
-          <Route path='/albums/:mbid' element={<RequireAuth><AlbumDetails /></RequireAuth>} />
-          <Route path='/artists' element={<RequireAuth><ArtistList /></RequireAuth>} />
-          <Route path='/artists/:mbid' element={<RequireAuth><ArtistDetails /></RequireAuth>} />
-          <Route path='/users/:user_id' element={<RequireAuth><UserProfile /></RequireAuth>} />
+          <Route path='/search' element={<SearchPage />} />
+          <Route path='/albums' element={<AlbumList />} />
+          <Route path='/albums/:mbid' element={<AlbumDetails />} />
+          <Route path='/artists' element={<ArtistList />} />
+          <Route path='/artists/:mbid' element={<ArtistDetails />} />
+          <Route path='/users/:user_id' element={<UserProfile />} />
           <Route path='*' element={
             <div style={{ textAlign: 'center', padding: '6rem 2rem', fontFamily: 'var(--font-body)', color: '#706c68' }}>
               <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '2rem', color: '#ddd9d1', marginBottom: '0.5rem' }}>404</h2>

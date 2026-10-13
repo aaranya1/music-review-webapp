@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext.jsx';
+import { useAuth } from '@/context/useAuth.js';
 import './AuthModal.css';
 
 function LoginModal({ onClose, onSwitchToRegister }) {
