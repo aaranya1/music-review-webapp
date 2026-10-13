@@ -1,0 +1,27 @@
+# DOMAIN comes from the environment, e.g. 203-0-113-7.sslip.io or groovelog.example.com.
+# Caddy gets and renews the HTTPS certificate automatically.
+{$DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	# API: strip the /api prefix and forward to Gunicorn
+	handle_path /api/* {
+		reverse_proxy api:8000
+	}
+
+	# Frontend: static files, falling back to index.html for client-side routes
+	handle {
+		root * /srv
+		@assets path /assets/*
+		header @assets Cache-Control "public, max-age=31536000, immutable"
+		try_files {path} /index.html
+		file_server
+	}
+}

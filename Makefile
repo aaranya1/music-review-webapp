@@ -33,13 +33,16 @@ setup:
 	@echo "Setup complete! Run 'make dev' to start."
 
 # ── Docker Production (single command) ───────────────────────────────────────
+# Needs .env.prod (copy .env.prod.example). See docker-compose.prod.yml.
+
+PROD = docker compose -f docker-compose.prod.yml --env-file .env.prod
 
 docker:
-	docker compose up --build -d
-	@echo "App running at http://localhost"
+	$(PROD) up --build -d
+	@echo "App running at https://$$(grep ^DOMAIN= .env.prod | cut -d= -f2)"
 
 docker-down:
-	docker compose down
+	$(PROD) down
 
 # ── Database ─────────────────────────────────────────────────────────────────
 
